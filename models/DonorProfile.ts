@@ -32,7 +32,7 @@ export interface IDonorProfile extends Document {
     type: "Point";
     coordinates: [number, number]; // [longitude, latitude]
   };
-  district: string;
+  area?: string;
   lastDonated?: Date;
   nextEligibleDate?: Date;
   age: number;
@@ -82,7 +82,7 @@ const DonorProfileSchema = new Schema<IDonorProfile>(
         required: true,
       },
     },
-    district: { type: String, required: true },
+    area: { type: String, default: "" },
     lastDonated: { type: Date },
     nextEligibleDate: { type: Date },
     age: { type: Number, required: true, min: 18, max: 65 },

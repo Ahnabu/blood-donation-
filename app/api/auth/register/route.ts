@@ -29,7 +29,6 @@ export async function POST(req: NextRequest) {
                 userId: user._id,
                 bloodGroup: "O+",          // placeholder; donor fills in profile
                 location: { type: "Point", coordinates: [0, 0] },
-                district: "",
                 age: 18,
                 weight: 50,
             });

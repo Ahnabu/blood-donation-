@@ -78,9 +78,10 @@ export default function Navbar() {
           transition: "background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease",
         }}
       >
-        {/* Crimson top accent */}
+        {/* Crimson top accent — hidden on mobile */}
         <div
           aria-hidden="true"
+          className="nav-accent-bar"
           style={{
             position: "absolute",
             top: 0, left: 0, right: 0,
@@ -399,7 +400,7 @@ export default function Navbar() {
           boxShadow: "0 24px 64px rgba(0,0,0,0.6)",
           transform: mobileOpen ? "translateY(0)" : "translateY(-110%)",
           transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          padding: "1rem 1.25rem 1.5rem",
+          padding: "1.25rem 1.5rem 2rem",
           maxHeight: "calc(100svh - 68px)",
           overflowY: "auto",
           WebkitOverflowScrolling: "touch",

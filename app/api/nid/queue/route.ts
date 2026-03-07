@@ -14,7 +14,7 @@ export async function GET() {
         await connectDB();
 
         const pendingUsers = await User.find({ nidStatus: "pending" })
-            .select("name email nidUrl createdAt")
+            .select("name email nidImage createdAt")
             .sort({ createdAt: 1 })
             .lean();
 

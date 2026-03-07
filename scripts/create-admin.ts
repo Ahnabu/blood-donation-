@@ -13,21 +13,22 @@ async function main() {
 
     const email = "admin@canttblood.com";
     const password = "Cannt@blood";
-    const hash = await bcrypt.hash(password, 12);
 
     const existing = await User.findOne({ email });
     if (existing) {
-        existing.password = hash;
-        existing.role = "admin";
-        existing.nidStatus = "approved";
-        existing.verified = true;
-        await existing.save();
+        // Use updateOne with a pre-hashed value to bypass the pre-save double-hash
+        const hash = await bcrypt.hash(password, 12);
+        await User.updateOne(
+            { email },
+            { $set: { password: hash, role: "admin", nidStatus: "approved", verified: true } }
+        );
         console.log(`✅ Updated existing user → ${email}`);
     } else {
+        // .create() triggers pre-save hook — pass plain password so it's hashed once
         await User.create({
             name: "Admin",
             email,
-            password: hash,
+            password,
             role: "admin",
             nidStatus: "approved",
             verified: true,

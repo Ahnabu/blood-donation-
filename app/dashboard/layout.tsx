@@ -19,6 +19,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     if (role === "admin") {
         links.push({ href: "/dashboard/admin", label: "Mission Control", icon: LayoutDashboard });
+        links.push({ href: "/dashboard/admin/requests", label: "Requests", icon: AlertCircle });
+        links.push({ href: "/dashboard/admin/nid", label: "NID Queue", icon: ShieldCheck });
     } else if (role === "donor") {
         links.push({ href: "/dashboard/donor", label: "Donor Hub", icon: LayoutDashboard });
     } else if (role === "receiver") {

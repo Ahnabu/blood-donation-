@@ -3,6 +3,24 @@ import { z } from "zod";
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
 export const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] as const;
+
+export const DHAKA_CANTONMENT_AREAS = [
+    "ECB Chattar",
+    "Banani",
+    "Baridhara",
+    "Nikunja-1",
+    "Nikunja-2",
+    "Officers' Colony",
+    "Sepoy Para",
+    "Cantonment Market",
+    "Gulshan-1",
+    "Gulshan-2",
+    "Uttara",
+    "Bashundhara",
+    "Airport Road",
+    "Other",
+] as const;
+export type CantonmentArea = (typeof DHAKA_CANTONMENT_AREAS)[number];
 const bloodGroupEnum = z.enum(BLOOD_GROUPS);
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
@@ -24,7 +42,7 @@ export const loginSchema = z.object({
 
 export const donorProfileSchema = z.object({
     bloodGroup: bloodGroupEnum,
-    district: z.string().min(2),
+    area: z.enum(DHAKA_CANTONMENT_AREAS).optional(),
     coordinates: z
         .tuple([z.number(), z.number()])
         .describe("[longitude, latitude]"),

@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     try {
         const { searchParams } = req.nextUrl;
         const bloodGroup = searchParams.get("bloodGroup");
-        const district = searchParams.get("district");
+        const area = searchParams.get("area");
         const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
         const limit = Math.min(20, parseInt(searchParams.get("limit") ?? "12"));
 
@@ -17,11 +17,11 @@ export async function GET(req: NextRequest) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const query: Record<string, any> = { isAvailable: true };
         if (bloodGroup) query.bloodGroup = bloodGroup;
-        if (district) query.district = { $regex: district, $options: "i" };
+        if (area) query.area = { $regex: area, $options: "i" };
 
         const [donors, total] = await Promise.all([
             DonorProfile.find(query)
-                .select("bloodGroup district totalDonations reliabilityScore")  // Anonymized
+                .select("bloodGroup area totalDonations reliabilityScore")  // Anonymized
                 .skip((page - 1) * limit)
                 .limit(limit)
                 .lean(),

@@ -56,7 +56,7 @@ export const authOptions: NextAuthOptions = {
     ],
     session: { strategy: "jwt" },
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
                 // @ts-expect-error custom fields
@@ -65,6 +65,13 @@ export const authOptions: NextAuthOptions = {
                 token.nidStatus = user.nidStatus;
                 // @ts-expect-error custom fields
                 token.verified = user.verified;
+            }
+            // Handle session.update() calls — merge any passed fields into token
+            if (trigger === "update" && session) {
+                if (session.nidStatus) token.nidStatus = session.nidStatus;
+                if (session.role) token.role = session.role;
+                if (session.verified !== undefined) token.verified = session.verified;
+                if (session.name) token.name = session.name;
             }
             return token;
         },

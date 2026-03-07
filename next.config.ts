@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV === "development";
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -24,7 +26,14 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://api.mapbox.com https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://res.cloudinary.com https://api.mapbox.com",
-              "connect-src 'self' https://api.mapbox.com https://events.mapbox.com https://vitals.vercel-insights.com",
+              [
+                "connect-src 'self'",
+                "https://api.mapbox.com",
+                "https://events.mapbox.com",
+                "https://vitals.vercel-insights.com",
+                "https://api.cloudinary.com",
+                isDev ? "ws://127.0.0.1:* ws://localhost:* http://localhost:*" : "",
+              ].filter(Boolean).join(" "),
               "worker-src blob:",
             ].join("; "),
           },

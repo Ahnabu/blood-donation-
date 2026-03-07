@@ -126,6 +126,17 @@ export default async function HomePage() {
           alignItems: "center",
         }}
       >
+        {/* Dark base overlay for mobile readability — starts below navbar (68px) */}
+        <div
+          aria-hidden="true"
+          className="lg:hidden"
+          style={{
+            position: "absolute",
+            top: 68, left: 0, right: 0, bottom: 0,
+            background: "rgba(6,8,16,0.55)",
+            pointerEvents: "none",
+          }}
+        />
         {/* Dot grid */}
         <div
           aria-hidden="true"
@@ -152,6 +163,15 @@ export default async function HomePage() {
             pointerEvents: "none",
           }}
         >
+          {/* Blurred glow halo — scoped to the blood drop only */}
+          <div aria-hidden="true" style={{
+            position: "absolute",
+            inset: "-40px",
+            borderRadius: "50%",
+            background: "radial-gradient(ellipse 70% 70% at 50% 55%, rgba(230,57,70,0.45) 0%, transparent 70%)",
+            filter: "blur(32px)",
+            pointerEvents: "none",
+          }} />
           <svg width="210" height="270" viewBox="0 0 100 130" fill="none" aria-hidden="true">
             <path
               d="M50 10 C50 10 15 60 15 80 C15 100 30 115 50 115 C70 115 85 100 85 80 C85 60 50 10 50 10Z"
@@ -168,6 +188,19 @@ export default async function HomePage() {
 
         <div className="container mx-auto relative" style={{ padding: "4rem clamp(1.5rem, 5vw, 3rem)" }}>
           <div className="animate-fade-in-up" style={{ maxWidth: 720 }}>
+            {/* Readability backdrop — visible on mobile only */}
+            <div
+              aria-hidden="true"
+              className="lg:hidden"
+              style={{
+                position: "absolute",
+                inset: "-2rem -1.5rem",
+                background: "radial-gradient(ellipse 100% 90% at 50% 50%, rgba(8,10,18,0.72) 30%, transparent 100%)",
+                pointerEvents: "none",
+                zIndex: 0,
+              }}
+            />
+            <div style={{ position: "relative", zIndex: 1 }}>
             {/* Eyebrow label */}
             <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
               <span style={{ display: "inline-block", width: 28, height: 2, borderRadius: 2, background: "var(--primary)" }} />
@@ -209,6 +242,7 @@ export default async function HomePage() {
                 </span>
               ))}
             </div>
+            </div>{/* end z-1 wrapper */}
           </div>
         </div>
       </section>

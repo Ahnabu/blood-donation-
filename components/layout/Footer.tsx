@@ -140,7 +140,7 @@ export default function Footer() {
           }}
         >
           <p style={{ fontSize: "0.8rem", color: "var(--text-faint)" }}>
-            © {year} Cantt-Blood. Built with ❤️ to save lives in Dhaka Cantonment.
+            © {year} Cantt-Blood. Built to save lives in Dhaka Cantonment.
           </p>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.78rem", color: "var(--text-faint)" }}>

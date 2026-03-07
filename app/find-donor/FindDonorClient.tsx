@@ -8,7 +8,7 @@ const BLOOD_GROUPS = ["", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 interface Donor {
     _id: string;
     bloodGroup: string;
-    district: string;
+    area: string;
     totalDonations: number;
     reliabilityScore: number;
 }
@@ -29,7 +29,7 @@ export default function FindDonorClient() {
     const search = useCallback(async (bg: string, page = 1) => {
         setLoading(true);
         setSearched(true);
-        const params = new URLSearchParams({ page: String(page), limit: "12", district: "Dhaka Cantonment" });
+        const params = new URLSearchParams({ page: String(page), limit: "12" });
         if (bg) params.set("bloodGroup", bg);
 
         const res = await fetch(`/api/donors?${params}`);
@@ -125,7 +125,7 @@ export default function FindDonorClient() {
 
                                     <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.875rem", color: "var(--text-muted)", marginBottom: "1rem" }}>
                                         <MapPin className="w-3.5 h-3.5" />
-                                        {donor.district}
+                                        {donor.area || "Dhaka Cantonment"}
                                     </div>
 
                                     {/* Reliability bar */}
