@@ -22,13 +22,16 @@ export default function FindDonorPage() {
     >
       <div className="container mx-auto px-4 md:px-6" style={{ paddingTop: "4rem" }}>
         <div style={{ marginBottom: "3rem" }}>
-          <div className="badge badge-red" style={{ marginBottom: "1rem", fontSize: "0.78rem" }}>
-            Dhaka Cantonment Area
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
+            <span style={{ display: "inline-block", width: 28, height: 2, borderRadius: 2, background: "var(--primary)" }} />
+            <span style={{ fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.13em", textTransform: "uppercase", color: "var(--primary-light)" }}>
+              Dhaka Cantonment Area
+            </span>
           </div>
           <h1 style={{ fontSize: "clamp(2rem, 4.5vw, 3.25rem)", marginBottom: "1rem" }}>
             Find a <span className="gradient-text">Donor</span>
           </h1>
-          <p style={{ maxWidth: 560, lineHeight: 1.75 }}>
+          <p style={{ maxWidth: 520, lineHeight: 1.75, color: "var(--text-muted)" }}>
             Search our database of verified donors in Dhaka Cantonment. Contact details
             are shared only after admin-verified matching.
           </p>

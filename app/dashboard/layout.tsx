@@ -31,38 +31,46 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
 
     return (
-        <div className="dashboard-shell" style={{ paddingTop: 64 }}>
+        <div className="dashboard-shell" style={{ paddingTop: 68 }}>
             {/* Sidebar */}
-            <aside className="sidebar hidden md:block" style={{ height: "calc(100vh - 64px)", top: 64 }}>
-                <div className="mb-6 px-3">
-                    <p style={{ fontSize: "0.72rem", fontWeight: 600, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.5rem" }}>Role</p>
-                    <div className="flex items-center gap-2">
-                        <span className={`badge ${role === "admin" ? "badge-red" : role === "donor" ? "badge-green" : "badge-blue"}`}>
+            <aside className="sidebar" style={{ display: undefined }} aria-label="Dashboard navigation">
+                {/* User badge */}
+                <div style={{
+                    padding: "0.75rem",
+                    marginBottom: "1.25rem",
+                    background: "rgba(255,255,255,0.03)",
+                    borderRadius: "10px",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                }}>
+                    <p style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>Role</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <span className={`badge ${role === "admin" ? "badge-red" : role === "donor" ? "badge-green" : "badge-blue"}`} style={{ textTransform: "capitalize" }}>
                             {role}
                         </span>
                         {nidStatus === "approved" ? (
-                            <ShieldCheck className="w-4 h-4 text-green-400" />
+                            <ShieldCheck style={{ width: 16, height: 16, color: "#4ade80", flexShrink: 0 }} />
                         ) : (
                             <span title={`NID ${nidStatus}`}>
-                                <AlertCircle className="w-4 h-4 text-yellow-400" />
+                                <AlertCircle style={{ width: 16, height: 16, color: "#fbbf24", flexShrink: 0 }} />
                             </span>
                         )}
                     </div>
                 </div>
 
-                <nav className="flex flex-col gap-1">
+                <p className="sidebar-section-label">Navigation</p>
+                <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                     {links.map(({ href, label, icon: Icon }) => (
                         <Link
                             key={href}
                             href={href}
                             className={`sidebar-link ${pathname === href ? "active" : ""}`}
                         >
-                            <Icon className="w-4 h-4" />
+                            <Icon style={{ width: 16, height: 16, flexShrink: 0 }} />
                             {label}
                         </Link>
                     ))}
                     <Link href="/dashboard/settings" className={`sidebar-link ${pathname === "/dashboard/settings" ? "active" : ""}`}>
-                        <Settings className="w-4 h-4" />
+                        <Settings style={{ width: 16, height: 16, flexShrink: 0 }} />
                         Settings
                     </Link>
                 </nav>

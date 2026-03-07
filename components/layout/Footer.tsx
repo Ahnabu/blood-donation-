@@ -20,25 +20,17 @@ export default function Footer() {
         background: "rgba(8, 12, 20, 0.95)",
       }}
     >
-      <div className="container mx-auto px-4 md:px-6" style={{ paddingTop: "3.5rem", paddingBottom: "3.5rem" }}>
+      <div style={{ padding: "3.5rem clamp(1.5rem, 5vw, 3rem)" }}>
 
         {/* ── Main grid ───────────────────────────────────────── */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "2.5rem 2rem",
-            marginBottom: "3rem",
-            alignItems: "start",
-          }}
-        >
+        <div className="footer-grid">
           {/* Brand */}
-          <div style={{ maxWidth: 280 }}>
-            <Link href="/" className="inline-flex items-center gap-2 font-bold text-xl mb-4" style={{ display: "flex" }}>
-              <Heart className="w-6 h-6 text-red-500 fill-red-500" aria-hidden="true" />
+          <div>
+            <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", fontWeight: 700, fontSize: "1.125rem", marginBottom: "0.875rem", textDecoration: "none" }}>
+              <Heart style={{ width: 22, height: 22, color: "#e63946", fill: "#e63946" }} aria-hidden="true" />
               <span className="gradient-text">Cantt-Blood</span>
             </Link>
-            <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: "var(--text-muted)", maxWidth: 260 }}>
               Connecting verified blood donors with patients in Dhaka Cantonment.
               Every drop counts — save a life today.
             </p>
@@ -58,13 +50,10 @@ export default function Footer() {
             >
               Platform
             </h3>
-            <ul className="flex flex-col gap-2 list-none" role="list">
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }} role="list">
               {PLATFORM_LINKS.map(([label, href]) => (
                 <li key={href}>
-                  <Link
-                    href={href}
-                    className="footer-link text-sm"
-                  >
+                  <Link href={href} className="footer-link" style={{ fontSize: "0.9rem" }}>
                     {label}
                   </Link>
                 </li>
@@ -86,7 +75,7 @@ export default function Footer() {
             >
               Find by Blood Group
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
               {BLOOD_GROUPS.map((bg) => (
                 <Link
                   key={bg}
@@ -115,7 +104,7 @@ export default function Footer() {
             >
               Get Started
             </h3>
-            <ul className="flex flex-col gap-2 list-none" role="list">
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }} role="list">
               {[
                 ["Register as Donor", "/register?role=donor"],
                 ["Request Blood",     "/register?role=receiver"],
@@ -124,19 +113,11 @@ export default function Footer() {
               ].map(([label, href]) => (
                 <li key={href}>
                   {href.startsWith("http") ? (
-                    <a
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="footer-link text-sm"
-                    >
+                    <a href={href} target="_blank" rel="noopener noreferrer" className="footer-link" style={{ fontSize: "0.9rem" }}>
                       {label} ↗
                     </a>
                   ) : (
-                    <Link
-                      href={href}
-                      className="footer-link text-sm"
-                    >
+                    <Link href={href} className="footer-link" style={{ fontSize: "0.9rem" }}>
                       {label}
                     </Link>
                   )}
@@ -162,7 +143,7 @@ export default function Footer() {
             © {year} Cantt-Blood. Built with ❤️ to save lives in Dhaka Cantonment.
           </p>
 
-          <div className="flex items-center gap-1.5" style={{ fontSize: "0.78rem", color: "var(--text-faint)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.78rem", color: "var(--text-faint)" }}>
             <span
               style={{
                 width: 7,

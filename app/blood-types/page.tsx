@@ -83,7 +83,7 @@ export default function BloodTypesPage() {
                             </span>
                           </td>
                           <td>
-                            <div className="flex flex-wrap gap-1.5">
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
                               {compatible.map((g) => (
                                 <span key={g} className="badge badge-green" style={{ fontSize: "0.7rem" }}>
                                   {g}
@@ -92,7 +92,7 @@ export default function BloodTypesPage() {
                             </div>
                           </td>
                           <td>
-                            <div className="flex flex-wrap gap-1.5">
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
                               {incompatible.map((g) => (
                                 <span
                                   key={g}

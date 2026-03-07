@@ -69,12 +69,12 @@ export default function NewBloodRequest() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto pb-10">
-            <h1 className="text-2xl font-bold mb-2">Request Blood</h1>
+        <div style={{ maxWidth: 672, margin: "0 auto", paddingBottom: "2.5rem" }}>
+            <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>Request Blood</h1>
             <p style={{ color: "var(--text-muted)", marginBottom: "2rem" }}>Fill out the details below so we can find compatible donors in Dhaka Cantonment.</p>
 
             {error && (
-                <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded mb-6">
+                <div style={{ background: "rgba(230,57,70,0.12)", border: "1px solid rgba(230,57,70,0.3)", color: "#ff9aa2", padding: "0.875rem 1rem", borderRadius: "var(--radius-sm)", marginBottom: "1.5rem" }}>
                     {error}
                 </div>
             )}
@@ -82,30 +82,30 @@ export default function NewBloodRequest() {
             <form onSubmit={handleSubmit(onSubmit)} className="glass" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "1.75rem" }}>
                 <div className="grid-2">
                     <div>
-                        <label className="block text-sm mb-1.5" style={{ color: "var(--text-muted)" }}>Patient Name</label>
+                        <label style={{ display: "block", fontSize: "0.875rem", marginBottom: "0.375rem", color: "var(--text-muted)" }}>Patient Name</label>
                         <input
                             type="text"
                             {...register("patientName")}
                             className="input"
                             placeholder="John Doe"
                         />
-                        {errors.patientName && <p className="text-red-400 text-xs mt-1">{errors.patientName.message}</p>}
+                        {errors.patientName && <p style={{ color: "#ff9aa2", fontSize: "0.75rem", marginTop: "0.25rem" }}>{errors.patientName.message}</p>}
                     </div>
                     <div>
-                        <label className="block text-sm mb-1.5" style={{ color: "var(--text-muted)" }}>Contact Phone</label>
+                        <label style={{ display: "block", fontSize: "0.875rem", marginBottom: "0.375rem", color: "var(--text-muted)" }}>Contact Phone</label>
                         <input
                             type="tel"
                             {...register("phone")}
                             className="input"
                             placeholder="01700000000"
                         />
-                        {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone.message}</p>}
+                        {errors.phone && <p style={{ color: "#ff9aa2", fontSize: "0.75rem", marginTop: "0.25rem" }}>{errors.phone.message}</p>}
                     </div>
                 </div>
 
                 <div className="grid-2">
                     <div>
-                        <label className="block text-sm mb-1.5" style={{ color: "var(--text-muted)" }}>Blood Group</label>
+                        <label style={{ display: "block", fontSize: "0.875rem", marginBottom: "0.375rem", color: "var(--text-muted)" }}>Blood Group</label>
                         <select {...register("bloodGroup")} className="input">
                             <option value="">Select Group</option>
                             <option value="A+">A+</option>
@@ -117,10 +117,10 @@ export default function NewBloodRequest() {
                             <option value="O+">O+</option>
                             <option value="O-">O-</option>
                         </select>
-                        {errors.bloodGroup && <p className="text-red-400 text-xs mt-1">{errors.bloodGroup.message}</p>}
+                        {errors.bloodGroup && <p style={{ color: "#ff9aa2", fontSize: "0.75rem", marginTop: "0.25rem" }}>{errors.bloodGroup.message}</p>}
                     </div>
                     <div>
-                        <label className="block text-sm mb-1.5" style={{ color: "var(--text-muted)" }}>Units Required</label>
+                        <label style={{ display: "block", fontSize: "0.875rem", marginBottom: "0.375rem", color: "var(--text-muted)" }}>Units Required</label>
                         <input
                             type="number"
                             {...register("unitsRequired", { valueAsNumber: true })}
@@ -128,36 +128,36 @@ export default function NewBloodRequest() {
                             min="1"
                             max="10"
                         />
-                        {errors.unitsRequired && <p className="text-red-400 text-xs mt-1">{errors.unitsRequired.message}</p>}
+                        {errors.unitsRequired && <p style={{ color: "#ff9aa2", fontSize: "0.75rem", marginTop: "0.25rem" }}>{errors.unitsRequired.message}</p>}
                     </div>
                 </div>
 
                 <div className="grid-2">
                     <div>
-                        <label className="block text-sm mb-1.5" style={{ color: "var(--text-muted)" }}>Urgency</label>
+                        <label style={{ display: "block", fontSize: "0.875rem", marginBottom: "0.375rem", color: "var(--text-muted)" }}>Urgency</label>
                         <select {...register("urgency")} className="input">
                             <option value="Routine">Routine (Within a week)</option>
                             <option value="Urgent">Urgent (Within 48 hours)</option>
                             <option value="STAT">STAT (Immediate emergency)</option>
                         </select>
-                        {errors.urgency && <p className="text-red-400 text-xs mt-1">{errors.urgency.message}</p>}
+                        {errors.urgency && <p style={{ color: "#ff9aa2", fontSize: "0.75rem", marginTop: "0.25rem" }}>{errors.urgency.message}</p>}
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-sm mb-1.5" style={{ color: "var(--text-muted)" }}>Hospital Name (Dhaka Cantonment)</label>
+                    <label style={{ display: "block", fontSize: "0.875rem", marginBottom: "0.375rem", color: "var(--text-muted)" }}>Hospital Name (Dhaka Cantonment)</label>
                     <input
                         type="text"
                         {...register("hospitalName")}
                         className="input"
                         placeholder="CMH Dhaka"
                     />
-                    {errors.hospitalName && <p className="text-red-400 text-xs mt-1">{errors.hospitalName.message}</p>}
+                    {errors.hospitalName && <p style={{ color: "#ff9aa2", fontSize: "0.75rem", marginTop: "0.25rem" }}>{errors.hospitalName.message}</p>}
                 </div>
 
                 <div>
-                    <label className="block text-sm mb-1.5" style={{ color: "var(--text-muted)" }}>Exact Location (Pinpoint the Hospital)</label>
-                    <div className="mb-2">
+                    <label style={{ display: "block", fontSize: "0.875rem", marginBottom: "0.375rem", color: "var(--text-muted)" }}>Exact Location (Pinpoint the Hospital)</label>
+                    <div style={{ marginBottom: "0.5rem" }}>
                         <LocationPicker
                             value={formCoords}
                             onChange={(coords) => setFormCoords(coords)}
@@ -166,20 +166,21 @@ export default function NewBloodRequest() {
                 </div>
 
                 <div>
-                    <label className="block text-sm mb-1.5" style={{ color: "var(--text-muted)" }}>Reason for Transfusion</label>
+                    <label style={{ display: "block", fontSize: "0.875rem", marginBottom: "0.375rem", color: "var(--text-muted)" }}>Reason for Transfusion</label>
                     <textarea
                         {...register("reason")}
-                        className="input min-h-25 resize-y"
+                        className="input"
+                        style={{ minHeight: 100, resize: "vertical" }}
                         placeholder="e.g. Surgery, Dengue, Accident"
                     />
-                    {errors.reason && <p className="text-red-400 text-xs mt-1">{errors.reason.message}</p>}
+                    {errors.reason && <p style={{ color: "#ff9aa2", fontSize: "0.75rem", marginTop: "0.25rem" }}>{errors.reason.message}</p>}
                 </div>
 
-                <div className="pt-4">
-                    <button type="submit" disabled={submitting} className="btn-primary w-full justify-center text-lg h-14">
+                <div style={{ paddingTop: "1rem" }}>
+                    <button type="submit" disabled={submitting} className="btn-primary" style={{ width: "100%", justifyContent: "center", fontSize: "1.1rem", height: 56 }}>
                         {submitting ? "Submitting Request..." : "Submit Blood Request"}
                     </button>
-                    <p className="text-xs text-center mt-3" style={{ color: "var(--text-faint)" }}>
+                    <p style={{ fontSize: "0.75rem", textAlign: "center", marginTop: "0.75rem", color: "var(--text-faint)" }}>
                         By submitting, you agree to receive calls from potential donors.
                     </p>
                 </div>

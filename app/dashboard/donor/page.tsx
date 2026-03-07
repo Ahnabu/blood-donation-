@@ -1,13 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { Clock, Activity, Calendar, Droplets } from "lucide-react";
-import { daysUntil } from "@/lib/utils";
+import { Clock, Activity, Calendar, Droplets, Heart, MapPin, ChevronRight, AlertCircle } from "lucide-react";
+import { daysUntil, URGENCY_CONFIG } from "@/lib/utils";
 
 export default function DonorDashboard() {
     const { data: session } = useSession();
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [requests, setRequests] = useState<any[]>([]);
+    const [reqLoading, setReqLoading] = useState(true);
 
     useEffect(() => {
         if (!session?.user) return;
@@ -33,7 +36,20 @@ export default function DonorDashboard() {
             }
         }
 
+        async function fetchRequests() {
+            try {
+                const res = await fetch("/api/requests?status=Pending&limit=5");
+                const json = await res.json();
+                if (json.success) setRequests(json.data.requests || []);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setReqLoading(false);
+            }
+        }
+
         fetchProfile();
+        fetchRequests();
     }, [session]);
 
     function getNextEligibleDate(lastDonated?: string | Date) {
@@ -92,17 +108,71 @@ export default function DonorDashboard() {
                 </div>
             </div>
 
+            {/* Donate / Need Blood Action Banner */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
+                <div className="glass" style={{ padding: "1.75rem", border: "1px solid rgba(230,57,70,0.25)", background: "rgba(230,57,70,0.06)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.875rem" }}>
+                        <Heart style={{ color: "var(--primary)", width: 22, height: 22 }} />
+                        <h3 style={{ fontWeight: 700, fontSize: "1.05rem" }}>Ready to Donate?</h3>
+                    </div>
+                    <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", marginBottom: "1.25rem" }}>
+                        {isEligible ? "You are eligible today. Browse urgent requests and save a life." : `You can donate again in ${daysToEligible} day${daysToEligible !== 1 ? "s" : ""}.`}
+                    </p>
+                    <Link href="/find-donor" className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                        <MapPin style={{ width: 15, height: 15 }} /> Find Requests Near You
+                    </Link>
+                </div>
+
+                <div className="glass" style={{ padding: "1.75rem", border: "1px solid rgba(255,255,255,0.06)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.875rem" }}>
+                        <AlertCircle style={{ color: "var(--warning)", width: 22, height: 22 }} />
+                        <h3 style={{ fontWeight: 700, fontSize: "1.05rem" }}>Need Blood?</h3>
+                    </div>
+                    <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", marginBottom: "1.25rem" }}>
+                        If you or someone you know needs blood urgently, submit a request to be matched with donors.
+                    </p>
+                    <Link href="/register?role=receiver" className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                        <ChevronRight style={{ width: 15, height: 15 }} /> Request as Receiver
+                    </Link>
+                </div>
+            </div>
+
+            {/* Open Blood Requests */}
             <div className="glass" style={{ padding: "1.75rem" }}>
-                <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.25rem" }}>Nearby Urgent Requests</h2>
-                {isEligible ? (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", flexWrap: "wrap", gap: "0.75rem" }}>
+                    <h2 style={{ fontSize: "1.25rem", fontWeight: 700 }}>Open Blood Requests</h2>
+                    <Link href="/find-donor" style={{ fontSize: "0.85rem", color: "var(--primary)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
+                        View all <ChevronRight style={{ width: 14, height: 14 }} />
+                    </Link>
+                </div>
+
+                {reqLoading ? (
+                    <div style={{ textAlign: "center", padding: "2.5rem 1rem", color: "var(--text-muted)" }}>Loading requests…</div>
+                ) : requests.length === 0 ? (
                     <div style={{ textAlign: "center", padding: "2.5rem 1rem", color: "var(--text-muted)" }}>
-                        <p>No urgent requests for {profile.bloodGroup} in your area right now.</p>
-                        <p style={{ fontSize: "0.875rem", marginTop: "0.5rem", color: "var(--text-faint)" }}>We will notify you immediately when there is a match.</p>
+                        <p>No open requests at the moment.</p>
+                        <p style={{ fontSize: "0.875rem", marginTop: "0.5rem", color: "var(--text-faint)" }}>We will notify you when there is an urgent need for {profile.bloodGroup}.</p>
                     </div>
                 ) : (
-                    <div style={{ textAlign: "center", padding: "2.5rem 1rem", color: "var(--text-muted)" }}>
-                        <p>You are currently in your waiting period.</p>
-                        <p style={{ fontSize: "0.875rem", marginTop: "0.5rem", color: "var(--text-faint)" }}>Requests will reappear here once you are eligible to donate again.</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+                        {requests.map((req) => {
+                            const urgency = URGENCY_CONFIG[req.urgency as keyof typeof URGENCY_CONFIG] ?? URGENCY_CONFIG.Routine;
+                            return (
+                                <div key={req._id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 1.25rem", borderRadius: "var(--radius-sm)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", flexWrap: "wrap", gap: "0.75rem" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+                                        <span className="badge badge-red" style={{ fontSize: "0.9rem", minWidth: 40, textAlign: "center" }}>{req.bloodGroup}</span>
+                                        <div>
+                                            <div style={{ fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.2rem" }}>{req.patientName}</div>
+                                            <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{req.hospitalName}</div>
+                                        </div>
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                                        <span style={{ fontSize: "0.78rem", fontWeight: 600, color: urgency.color, background: `${urgency.color}18`, padding: "0.2rem 0.6rem", borderRadius: "999px", border: `1px solid ${urgency.color}44` }}>{urgency.label}</span>
+                                        <span style={{ fontSize: "0.8rem", color: "var(--text-faint)" }}>{req.unitsNeeded ?? req.unitsRequired} units</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>

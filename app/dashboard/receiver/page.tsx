@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, Activity, Clock, CheckCircle } from "lucide-react";
+import { Plus, Activity, Clock, CheckCircle, Heart, ChevronRight } from "lucide-react";
 import { STATUS_STEPS, getStatusIndex, URGENCY_CONFIG } from "@/lib/utils";
 
 export default function ReceiverDashboard() {
@@ -27,6 +27,22 @@ export default function ReceiverDashboard() {
                 </div>
                 <Link href="/dashboard/receiver/new" className="btn-primary">
                     <Plus className="w-4 h-4" /> New Request
+                </Link>
+            </div>
+
+            {/* Become a Donor Banner */}
+            <div className="glass" style={{ padding: "1.5rem 1.75rem", marginBottom: "2rem", border: "1px solid rgba(230,57,70,0.2)", background: "rgba(230,57,70,0.05)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                    <div style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(230,57,70,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <Heart style={{ color: "var(--primary)", width: 22, height: 22 }} />
+                    </div>
+                    <div>
+                        <div style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "0.2rem" }}>Want to save lives too?</div>
+                        <div style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>Register as a blood donor and help others in need when you are able.</div>
+                    </div>
+                </div>
+                <Link href="/register?role=donor" className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", whiteSpace: "nowrap" }}>
+                    <Heart style={{ width: 15, height: 15 }} /> Become a Donor <ChevronRight style={{ width: 14, height: 14 }} />
                 </Link>
             </div>
 

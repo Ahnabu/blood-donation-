@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Heart, Users, Droplets, MapPin, Shield, ChevronRight, CheckCircle } from "lucide-react";
+import { Heart, Users, Droplets, ChevronRight, CheckCircle } from "lucide-react";
 import { COMPATIBLE_DONORS } from "@/lib/matching";
+import connectDB from "@/lib/db";
+import User from "@/models/User";
+import ReceiverRequest from "@/models/ReceiverRequest";
+import HeroCTA from "./components/HeroCTA";
+import BottomCTA from "./components/BottomCTA";
 
 export const metadata: Metadata = {
   title: "Cantt-Blood — Connect Blood Donors, Save Lives",
@@ -15,12 +20,7 @@ export const metadata: Metadata = {
   },
 };
 
-const STATS = [
-  { value: "1,400+", label: "Registered Donors" },
-  { value: "900+",   label: "Lives Saved" },
-  { value: "3.2 min",label: "Avg Match Time" },
-  { value: "Dhaka",  label: "Cantonment Area" },
-];
+
 
 const STEPS = [
   {
@@ -87,7 +87,27 @@ const jsonLd = {
   ],
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  let donorCount = 0;
+  let livesSaved = 0;
+  try {
+    await connectDB();
+    const [donors, fulfilled] = await Promise.all([
+      User.countDocuments({ role: "donor" }),
+      ReceiverRequest.countDocuments({ status: "Fulfilled" }),
+    ]);
+    donorCount = donors;
+    livesSaved = fulfilled;
+  } catch {
+    // fall back to zeroes if DB is unreachable
+  }
+
+  const STATS = [
+    { value: donorCount > 0 ? `${donorCount.toLocaleString()}+` : "—", label: "Registered Donors" },
+    { value: livesSaved > 0  ? `${livesSaved.toLocaleString()}+`  : "—", label: "Lives Saved" },
+    { value: "3.2 min", label: "Avg Match Time" },
+    { value: "Dhaka",   label: "Cantonment Area" },
+  ];
   return (
     <>
       <script
@@ -116,19 +136,20 @@ export default function HomePage() {
               "radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px)",
             backgroundSize: "42px 42px",
             maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)",
+            pointerEvents: "none",
           }}
         />
 
         {/* Floating blood drop (lg+) */}
         <div
-          className="animate-float blood-drop-glow"
+          className="hidden lg:block animate-float blood-drop-glow"
           aria-hidden="true"
           style={{
             position: "absolute",
             right: "6%",
             top: "50%",
             transform: "translateY(-50%)",
-            display: "none",
+            pointerEvents: "none",
           }}
         >
           <svg width="210" height="270" viewBox="0 0 100 130" fill="none" aria-hidden="true">
@@ -145,11 +166,14 @@ export default function HomePage() {
           </svg>
         </div>
 
-        <div className="container mx-auto px-4 md:px-6 relative" style={{ paddingTop: "4rem", paddingBottom: "4rem" }}>
+        <div className="container mx-auto relative" style={{ padding: "4rem clamp(1.5rem, 5vw, 3rem)" }}>
           <div className="animate-fade-in-up" style={{ maxWidth: 720 }}>
-            {/* Eyebrow badge */}
-            <div className="badge badge-red mb-6" style={{ fontSize: "0.78rem" }}>
-              Dhaka Cantonment&apos;s Blood Matching Platform
+            {/* Eyebrow label */}
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
+              <span style={{ display: "inline-block", width: 28, height: 2, borderRadius: 2, background: "var(--primary)" }} />
+              <span style={{ fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.13em", textTransform: "uppercase", color: "var(--primary-light)" }}>
+                Dhaka Cantonment&apos;s Blood Matching Platform
+              </span>
             </div>
 
             <h1 className="mb-5">
@@ -174,30 +198,13 @@ export default function HomePage() {
             </p>
 
             {/* CTA buttons */}
-            <div className="flex flex-col sm:flex-row flex-wrap gap-3" style={{ marginBottom: "2.5rem" }}>
-              <Link
-                href="/register?role=donor"
-                className="btn-primary"
-                style={{ fontSize: "1rem", padding: "0.875rem 2.25rem" }}
-              >
-                <Heart className="w-5 h-5" aria-hidden="true" />
-                Become a Donor
-              </Link>
-              <Link
-                href="/register?role=receiver"
-                className="btn-secondary"
-                style={{ fontSize: "1rem", padding: "0.875rem 2.25rem" }}
-              >
-                Request Blood
-                <ChevronRight className="w-4 h-4" aria-hidden="true" />
-              </Link>
-            </div>
+            <HeroCTA />
 
             {/* Feature checklist */}
-            <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem 2rem" }}>
               {["Free to use", "Verified donors", "Emergency STAT alerts", "Dhaka Cantonment area"].map((f) => (
-                <span key={f} className="flex items-center gap-1.5 text-sm" style={{ color: "var(--text-muted)" }}>
-                  <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "var(--success)" }} aria-hidden="true" />
+                <span key={f} style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.875rem", color: "var(--text-muted)" }}>
+                  <CheckCircle style={{ width: 16, height: 16, flexShrink: 0, color: "var(--success)" }} aria-hidden="true" />
                   {f}
                 </span>
               ))}
@@ -233,7 +240,7 @@ export default function HomePage() {
           <div className="text-center" style={{ marginBottom: "3.5rem" }}>
             <div className="badge badge-red" style={{ marginBottom: "1rem" }}>Simple Process</div>
             <h2>How Cantt-Blood Works</h2>
-            <p style={{ maxWidth: 480, margin: "1rem auto 0" }}>
+            <p style={{ maxWidth: 480, margin: "1rem auto 0", textAlign: "center" }}>
               Three simple steps stand between a donor and saving a life.
             </p>
           </div>
@@ -280,7 +287,7 @@ export default function HomePage() {
           <div className="text-center" style={{ marginBottom: "3rem" }}>
             <div className="badge badge-red" style={{ marginBottom: "1rem" }}>Compatibility</div>
             <h2>Which Blood Groups Are Compatible?</h2>
-            <p style={{ maxWidth: 500, margin: "1rem auto 0" }}>
+            <p style={{ maxWidth: 500, margin: "1rem auto 0", textAlign: "center" }}>
               Our matching engine uses the complete ABO + RhD compatibility matrix.
             </p>
           </div>
@@ -300,7 +307,7 @@ export default function HomePage() {
                       <span className="badge badge-red">{recipient}</span>
                     </td>
                     <td>
-                      <div className="flex flex-wrap gap-2">
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
                         {donors.map((d) => (
                           <span key={d} className="badge badge-gray" style={{ fontSize: "0.72rem" }}>
                             {d}
@@ -402,19 +409,10 @@ export default function HomePage() {
             <Heart className="w-8 h-8 text-red-500 fill-red-500 animate-pulse-blood" aria-hidden="true" />
           </div>
           <h2 style={{ marginBottom: "1rem" }}>Ready to Save a Life?</h2>
-          <p style={{ maxWidth: 460, margin: "0 auto 2.5rem", lineHeight: 1.7 }}>
+          <p style={{ maxWidth: 460, margin: "0 auto 2.5rem", lineHeight: 1.7, textAlign: "center" }}>
             It only takes 10 minutes to donate. Your blood could save up to 3 lives.
           </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link href="/register?role=donor" className="btn-primary" style={{ fontSize: "1rem", padding: "0.875rem 2.5rem" }}>
-              <Heart className="w-5 h-5" aria-hidden="true" />
-              Register as Donor
-            </Link>
-            <Link href="/find-donor" className="btn-secondary" style={{ fontSize: "1rem", padding: "0.875rem 2.5rem" }}>
-              <MapPin className="w-4 h-4" aria-hidden="true" />
-              Find Donors Near Me
-            </Link>
-          </div>
+          <BottomCTA />
         </div>
       </section>
     </>

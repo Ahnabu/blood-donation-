@@ -46,34 +46,45 @@ export default function FindDonorClient() {
     return (
         <div>
             {/* Search form */}
-            <form onSubmit={handleSubmit} className="glass" style={{ padding: "2rem", marginBottom: "2rem", maxWidth: 640, margin: "0 auto 2rem" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "1rem", alignItems: "end" }}>
-                    <div>
-                        <label style={{ display: "block", fontSize: "0.875rem", color: "var(--text-muted)", marginBottom: "0.375rem" }}>Blood Group (Dhaka Cantonment Area)</label>
+            <div className="glass" style={{ padding: "clamp(1.25rem, 4vw, 2rem)", marginBottom: "2.5rem", maxWidth: 640, margin: "0 auto 2.5rem" }}>
+                <p style={{ fontSize: "0.8125rem", color: "var(--text-faint)", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                    <MapPin style={{ width: 13, height: 13, flexShrink: 0 }} />
+                    Showing donors in Dhaka Cantonment Area
+                </p>
+                <form onSubmit={handleSubmit}>
+                    <label htmlFor="blood-group-select" style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text)", marginBottom: "0.5rem" }}>
+                        Select Blood Group
+                    </label>
+                    <div style={{ display: "flex", gap: "0.75rem", alignItems: "stretch" }}>
                         <select
+                            id="blood-group-select"
                             className="input"
                             value={bloodGroup}
                             onChange={(e) => setBloodGroup(e.target.value)}
-                            id="blood-group-select"
+                            style={{ flex: 1 }}
                         >
-                            <option value="">All groups</option>
+                            <option value="">All blood groups</option>
                             {BLOOD_GROUPS.slice(1).map((bg) => (
                                 <option key={bg} value={bg}>{bg}</option>
                             ))}
                         </select>
+                        <button
+                            type="submit"
+                            className="btn-primary"
+                            id="search-donors-btn"
+                            style={{ padding: "0 1.5rem", whiteSpace: "nowrap", flexShrink: 0 }}
+                        >
+                            <Search style={{ width: 16, height: 16 }} />
+                            Search
+                        </button>
                     </div>
-
-                    <button type="submit" className="btn-primary" id="search-donors-btn" style={{ height: 44, padding: "0 1.25rem", minHeight: "44px" }}>
-                        <Search className="w-4 h-4" />
-                        Search
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
 
             {/* Results */}
             {loading && (
                 <div style={{ textAlign: "center", padding: "5rem 1rem", color: "var(--text-muted)" }}>
-                    <Droplets className="w-10 h-10 mx-auto mb-4 animate-pulse" style={{ color: "var(--primary)" }} />
+                    <Droplets style={{ width: 40, height: 40, margin: "0 auto 1rem", color: "var(--primary)", display: "block" }} className="animate-pulse" />
                     <p>Searching donors…</p>
                 </div>
             )}
@@ -142,7 +153,7 @@ export default function FindDonorClient() {
 
                     {/* Pagination */}
                     {result.pages > 1 && (
-                        <div className="flex justify-center gap-2 mt-8">
+                        <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", marginTop: "2.5rem", flexWrap: "wrap" }}>
                             {Array.from({ length: result.pages }, (_, i) => i + 1).map((p) => (
                                 <button
                                     key={p}
@@ -160,8 +171,9 @@ export default function FindDonorClient() {
 
             {!searched && (
                 <div style={{ textAlign: "center", padding: "5rem 1rem", color: "var(--text-faint)" }}>
-                    <Search className="w-12 h-12 mx-auto mb-4" style={{ opacity: 0.25 }} />
-                    <p>Select a blood group and click Search to find donors.</p>
+                    <Search style={{ width: 48, height: 48, margin: "0 auto 1rem", opacity: 0.2, display: "block" }} />
+                    <p style={{ fontWeight: 500, marginBottom: "0.375rem" }}>Ready to search</p>
+                    <p style={{ fontSize: "0.875rem" }}>Select a blood group above and click Search to find donors.</p>
                 </div>
             )}
         </div>
