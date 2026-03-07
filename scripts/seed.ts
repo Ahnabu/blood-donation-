@@ -1,3 +1,5 @@
+import * as dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import User from "../models/User";
@@ -31,7 +33,7 @@ async function seed() {
         // 1. Create Superadmin
         const admin = await User.create({
             name: "Super Admin",
-            email: "admin@lifelink.bd",
+            email: "admin@canttblood.bd",
             password: hashedPassword,
             role: "admin",
             nidStatus: "approved",
@@ -48,9 +50,9 @@ async function seed() {
         ]);
 
         await DonorProfile.insertMany([
-            { userId: donors[0]._id, bloodGroup: "O+", district: "Dhaka", location: { type: "Point", coordinates: [90.4125, 23.8103] }, totalDonations: 2, reliabilityScore: 98, age: 25, weight: 65, isAvailable: true },
-            { userId: donors[1]._id, bloodGroup: "A-", district: "Chattogram", location: { type: "Point", coordinates: [91.8315, 22.3569] }, totalDonations: 0, reliabilityScore: 100, age: 30, weight: 55, isAvailable: true },
-            { userId: donors[2]._id, bloodGroup: "AB+", district: "Dhaka", location: { type: "Point", coordinates: [90.4000, 23.7500] }, totalDonations: 5, reliabilityScore: 85, age: 40, weight: 75, lastDonated: new Date("2023-12-01"), isAvailable: true },
+            { userId: donors[0]._id, bloodGroup: "O+", district: "Dhaka Cantonment", location: { type: "Point", coordinates: [90.3950, 23.8150] }, totalDonations: 2, reliabilityScore: 98, age: 25, weight: 65, isAvailable: true },
+            { userId: donors[1]._id, bloodGroup: "A-", district: "Dhaka Cantonment", location: { type: "Point", coordinates: [90.3970, 23.8200] }, totalDonations: 0, reliabilityScore: 100, age: 30, weight: 55, isAvailable: true },
+            { userId: donors[2]._id, bloodGroup: "AB+", district: "Dhaka Cantonment", location: { type: "Point", coordinates: [90.3990, 23.8100] }, totalDonations: 5, reliabilityScore: 85, age: 40, weight: 75, lastDonated: new Date("2023-12-01"), isAvailable: true },
         ]);
         console.log("🩸 3 Donors created.");
 
@@ -64,6 +66,7 @@ async function seed() {
             patientName: "Patient X",
             phone: "01800000000",
             bloodGroup: "O+",
+            district: "Dhaka Cantonment",
             urgency: "Urgent",
             unitsRequired: 2,
             location: { type: "Point", coordinates: [90.41, 23.81] },

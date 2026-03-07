@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Plus, Activity, Clock, CheckCircle } from "lucide-react";
 import { STATUS_STEPS, getStatusIndex, URGENCY_CONFIG } from "@/lib/utils";
 
@@ -19,61 +20,63 @@ export default function ReceiverDashboard() {
 
     return (
         <div>
-            <div className="flex items-center justify-between mb-8">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
                 <div>
-                    <h1 className="text-2xl font-bold mb-2">My Requests</h1>
-                    <p className="text-gray-400">Track and manage your blood requests.</p>
+                    <h1 style={{ fontSize: "1.625rem", fontWeight: 700, marginBottom: "0.375rem" }}>My Requests</h1>
+                    <p style={{ color: "var(--text-muted)" }}>Track and manage your blood requests.</p>
                 </div>
-                <button className="btn-primary" onClick={() => alert("New Request Form Modal (TODO)")}>
+                <Link href="/dashboard/receiver/new" className="btn-primary">
                     <Plus className="w-4 h-4" /> New Request
-                </button>
+                </Link>
             </div>
 
             {loading ? (
-                <div className="text-center py-20 text-gray-500">Loading requests...</div>
+                <div style={{ textAlign: "center", padding: "5rem 1rem", color: "var(--text-muted)" }}>Loading requests…</div>
             ) : requests.length === 0 ? (
-                <div className="glass p-12 text-center text-gray-400">
-                    <Activity className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                    <h3 className="text-lg font-bold text-white mb-2">No active requests</h3>
-                    <p className="mb-6">You haven't made any blood requests yet.</p>
-                    <button className="btn-secondary" onClick={() => alert("New Request Form Modal (TODO)")}>
+                <div className="glass" style={{ padding: "4rem 2rem", textAlign: "center" }}>
+                    <Activity className="w-12 h-12 mx-auto mb-4" style={{ opacity: 0.3, color: "var(--text-muted)" }} />
+                    <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.5rem" }}>No active requests</h3>
+                    <p style={{ color: "var(--text-muted)", marginBottom: "1.5rem" }}>You haven&apos;t made any blood requests yet.</p>
+                    <Link href="/dashboard/receiver/new" className="btn-secondary">
                         Request Blood Now
-                    </button>
+                    </Link>
                 </div>
             ) : (
-                <div className="space-y-6">
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                     {requests.map(req => {
                         const urgency = URGENCY_CONFIG[req.urgency as keyof typeof URGENCY_CONFIG];
                         const currentIndex = getStatusIndex(req.status);
 
                         return (
-                            <div key={req._id} className="glass p-6 border-l-4" style={{ borderLeftColor: urgency.color.replace('text-', '') }}>
-                                <div className="flex justify-between items-start mb-6 border-b border-white/5 pb-4">
+                            <div key={req._id} className="glass" style={{ padding: "1.75rem", borderLeft: `4px solid ${urgency.color}` }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", paddingBottom: "1.25rem", borderBottom: "1px solid rgba(255,255,255,0.06)", flexWrap: "wrap", gap: "1rem" }}>
                                     <div>
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <span className="badge badge-red text-lg">{req.bloodGroup}</span>
-                                            <span className={`badge ${urgency.bg} ${urgency.color} ${urgency.border}`}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.625rem", flexWrap: "wrap" }}>
+                                            <span className="badge badge-red" style={{ fontSize: "0.9rem" }}>{req.bloodGroup}</span>
+                                            <span className={`badge ${urgency.bg} ${urgency.border}`} style={{ color: urgency.color }}>
                                                 {urgency.label}
                                             </span>
                                         </div>
-                                        <h3 className="font-bold text-lg">{req.patientName}</h3>
-                                        <p className="text-sm text-gray-400">{req.hospitalName}</p>
+                                        <h3 style={{ fontWeight: 700, fontSize: "1.05rem", marginBottom: "0.25rem" }}>{req.patientName}</h3>
+                                        <p style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>{req.hospitalName}</p>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="text-2xl font-bold">{req.unitsNeeded} <span className="text-sm font-normal text-gray-400">units</span></div>
-                                        <div className="text-xs text-gray-500 mt-1">Needed by {new Date(req.neededBy).toLocaleDateString()}</div>
+                                    <div style={{ textAlign: "right" }}>
+                                        <div style={{ fontSize: "1.75rem", fontWeight: 800 }}>
+                                            {req.unitsNeeded}{" "}
+                                            <span style={{ fontSize: "0.875rem", fontWeight: 400, color: "var(--text-muted)" }}>units</span>
+                                        </div>
+                                        <div style={{ fontSize: "0.75rem", color: "var(--text-faint)", marginTop: "0.25rem" }}>Needed by {new Date(req.neededBy).toLocaleDateString()}</div>
                                     </div>
                                 </div>
 
-                                {/* Status Tracker */}
-                                <div className="py-4">
+                                <div style={{ padding: "1rem 0" }}>
                                     <div className="status-track">
                                         {STATUS_STEPS.map((step, idx) => (
                                             <div key={step} className={`status-step ${idx < currentIndex ? "done" : idx === currentIndex ? "active" : ""}`}>
                                                 <div className="step-dot flex items-center justify-center">
                                                     {idx < currentIndex && <CheckCircle className="w-3 h-3 text-white" />}
                                                 </div>
-                                                <span className={`text-xs mt-2 font-medium ${idx <= currentIndex ? "text-white" : "text-gray-500"}`}>
+                                                <span style={{ fontSize: "0.72rem", marginTop: "0.5rem", fontWeight: 500, color: idx <= currentIndex ? "var(--text)" : "var(--text-faint)" }}>
                                                     {step}
                                                 </span>
                                             </div>
@@ -82,8 +85,8 @@ export default function ReceiverDashboard() {
                                 </div>
 
                                 {req.status === "Pending" && (
-                                    <div className="mt-6 flex justify-end">
-                                        <button className="text-sm text-red-400 hover:text-red-300 transition-colors">Cancel Request</button>
+                                    <div style={{ marginTop: "1.25rem", display: "flex", justifyContent: "flex-end" }}>
+                                        <button style={{ fontSize: "0.875rem", color: "var(--primary-light)", background: "none", border: "none", cursor: "pointer" }}>Cancel Request</button>
                                     </div>
                                 )}
                             </div>

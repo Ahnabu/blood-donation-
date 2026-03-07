@@ -31,11 +31,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
 
     return (
-        <div className="dashboard-shell pt-16">
+        <div className="dashboard-shell" style={{ paddingTop: 64 }}>
             {/* Sidebar */}
             <aside className="sidebar hidden md:block" style={{ height: "calc(100vh - 64px)", top: 64 }}>
                 <div className="mb-6 px-3">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Role</p>
+                    <p style={{ fontSize: "0.72rem", fontWeight: 600, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.5rem" }}>Role</p>
                     <div className="flex items-center gap-2">
                         <span className={`badge ${role === "admin" ? "badge-red" : role === "donor" ? "badge-green" : "badge-blue"}`}>
                             {role}

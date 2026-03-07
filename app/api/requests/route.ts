@@ -71,6 +71,32 @@ export async function POST(req: NextRequest) {
             ...parsed.data,
         });
 
+        if (parsed.data.urgency === "STAT") {
+            try {
+                // Background task to send emails
+                const { getCompatibleDonorGroups } = await import("@/lib/matching");
+                const { sendMatchNotification } = await import("@/lib/email");
+                const DonorProfile = (await import("@/models/DonorProfile")).default;
+
+                const compatibleGroups = getCompatibleDonorGroups(parsed.data.bloodGroup as any);
+                const profiles = await DonorProfile.find({ bloodGroup: { $in: compatibleGroups }, isAvailable: true }).populate("userId", "email");
+
+                for (const profile of profiles) {
+                    const profileUser = profile.userId as any;
+                    if (profileUser?.email) {
+                        await sendMatchNotification(profileUser.email, {
+                            bloodGroup: parsed.data.bloodGroup,
+                            hospitalName: parsed.data.hospitalName,
+                            urgency: "STAT",
+                            patientName: parsed.data.patientName
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Match Engine Error:", err);
+            }
+        }
+
         return apiSuccess(request, 201);
     } catch (err) {
         console.error("[POST /api/requests]", err);

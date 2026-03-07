@@ -53,9 +53,9 @@ export function getBloodGroupColor(group: string): string {
 // ─── Urgency Utilities ────────────────────────────────────────────────────────
 
 export const URGENCY_CONFIG = {
-    Routine: { label: "Routine", color: "text-green-400", bg: "bg-green-400/10", border: "border-green-400/30" },
-    Urgent: { label: "Urgent", color: "text-yellow-400", bg: "bg-yellow-400/10", border: "border-yellow-400/30" },
-    STAT: { label: "🚨 STAT", color: "text-red-400", bg: "bg-red-400/10", border: "border-red-400/30" },
+    Routine: { label: "Routine", color: "#6ee7a0", bg: "bg-green-400/10",  border: "border-green-400/30" },
+    Urgent:  { label: "Urgent",  color: "#fcd34d", bg: "bg-yellow-400/10", border: "border-yellow-400/30" },
+    STAT:    { label: "🚨 STAT", color: "#ff9aa2", bg: "bg-red-400/10",    border: "border-red-400/30" },
 } as const;
 
 // ─── Request Status Utilities ─────────────────────────────────────────────────

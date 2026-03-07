@@ -4,22 +4,22 @@ import { Heart, Users, Droplets, MapPin, Shield, ChevronRight, CheckCircle } fro
 import { COMPATIBLE_DONORS } from "@/lib/matching";
 
 export const metadata: Metadata = {
-  title: "LifeLink — Connect Blood Donors, Save Lives",
+  title: "Cantt-Blood — Connect Blood Donors, Save Lives",
   description:
-    "Bangladesh's fastest blood donor-receiver matching platform. Find compatible blood donors nearby in seconds. Register as a donor or request blood in emergencies.",
+    "Dhaka Cantonment's fastest blood donor-receiver matching platform. Find compatible blood donors nearby in seconds. Register as a donor or request blood in emergencies.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "LifeLink — Connect Blood Donors, Save Lives",
+    title: "Cantt-Blood — Connect Blood Donors, Save Lives",
     description: "Find compatible blood donors in seconds. Register as a donor or request blood.",
     url: "/",
   },
 };
 
 const STATS = [
-  { value: "12,400+", label: "Registered Donors" },
-  { value: "8,900+", label: "Lives Saved" },
-  { value: "3.2 min", label: "Avg Match Time" },
-  { value: "64", label: "Districts Covered" },
+  { value: "1,400+", label: "Registered Donors" },
+  { value: "900+",   label: "Lives Saved" },
+  { value: "3.2 min",label: "Avg Match Time" },
+  { value: "Dhaka",  label: "Cantonment Area" },
 ];
 
 const STEPS = [
@@ -61,22 +61,24 @@ const FAQS = [
     q: "How does the emergency STAT request work?",
     a: "STAT requests bypass standard queues. Compatible donors within 10 km receive an immediate SMS/email alert. Stock in the blood bank is also checked simultaneously.",
   },
+  {
+    q: "Having issues or want to talk to the developer?",
+    a: "CONTACT_LINK",
+  },
 ];
 
-// JSON-LD structured data
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Organization",
-      name: "LifeLink",
+      name: "Cantt-Blood",
       url: "/",
-      description: "Blood donor-receiver matching platform",
-      logo: "/og-image.png",
+      description: "Blood donor-receiver matching platform in Dhaka Cantonment",
     },
     {
       "@type": "FAQPage",
-      mainEntity: FAQS.map(({ q, a }) => ({
+      mainEntity: FAQS.slice(0, 5).map(({ q, a }) => ({
         "@type": "Question",
         name: q,
         acceptedAnswer: { "@type": "Answer", text: a },
@@ -93,100 +95,127 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* ── Hero ─────────────────────────────────────────────────── */}
+      {/* ── Hero ─────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden"
         style={{
           background:
-            "radial-gradient(ellipse 80% 60% at 50% -20%, rgba(220,38,38,0.15), transparent)",
-          minHeight: "90vh",
+            "radial-gradient(ellipse 90% 60% at 50% -10%, rgba(230,57,70,0.18) 0%, transparent 70%)",
+          minHeight: "92vh",
           display: "flex",
           alignItems: "center",
         }}
       >
-        {/* Background grid */}
+        {/* Dot grid */}
         <div
+          aria-hidden="true"
           style={{
             position: "absolute",
             inset: 0,
             backgroundImage:
-              "radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
+              "radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px)",
+            backgroundSize: "42px 42px",
             maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)",
           }}
         />
 
-        <div className="container mx-auto px-6 relative">
-          <div style={{ maxWidth: 740 }} className="animate-fade-in-up">
-            <div className="badge badge-red mb-6" style={{ fontSize: "0.8rem" }}>
-              🩸 Bangladesh&apos;s #1 Blood Matching Platform
-            </div>
-
-            <h1 className="mb-6">
-              Every Drop of Blood is a{" "}
-              <span className="gradient-text">Lifeline</span>
-            </h1>
-
-            <p
-              className="text-gray-400 mb-10"
-              style={{ fontSize: "1.2rem", maxWidth: 560, lineHeight: 1.7 }}
-            >
-              Connect with verified blood donors near you in minutes. Whether it&apos;s a
-              scheduled surgery or an emergency, LifeLink bridges the gap between donors
-              and patients instantly.
-            </p>
-
-            <div className="flex flex-wrap gap-4">
-              <Link href="/register?role=donor" className="btn-primary" style={{ fontSize: "1rem", padding: "0.875rem 2rem" }}>
-                <Heart className="w-5 h-5" />
-                Become a Donor
-              </Link>
-              <Link href="/register?role=receiver" className="btn-secondary" style={{ fontSize: "1rem", padding: "0.875rem 2rem" }}>
-                Request Blood
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-
-            <div className="flex flex-wrap gap-4 mt-8">
-              {["Free to use", "Verified donors", "Emergency STAT alerts", "All 64 districts"].map((f) => (
-                <span key={f} className="flex items-center gap-2 text-sm text-gray-400">
-                  <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
-                  {f}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Floating blood drop */}
+        {/* Floating blood drop (lg+) */}
         <div
           className="animate-float blood-drop-glow"
+          aria-hidden="true"
           style={{
             position: "absolute",
-            right: "8%",
+            right: "6%",
             top: "50%",
             transform: "translateY(-50%)",
             display: "none",
           }}
         >
-          <svg width="200" height="260" viewBox="0 0 100 130" fill="none">
+          <svg width="210" height="270" viewBox="0 0 100 130" fill="none" aria-hidden="true">
             <path
               d="M50 10 C50 10 15 60 15 80 C15 100 30 115 50 115 C70 115 85 100 85 80 C85 60 50 10 50 10Z"
               fill="url(#blood-gradient)"
             />
             <defs>
               <radialGradient id="blood-gradient" cx="40%" cy="40%">
-                <stop offset="0%" stopColor="#ef4444" />
+                <stop offset="0%" stopColor="#ff6b6b" />
                 <stop offset="100%" stopColor="#7f1d1d" />
               </radialGradient>
             </defs>
           </svg>
         </div>
+
+        <div className="container mx-auto px-4 md:px-6 relative" style={{ paddingTop: "4rem", paddingBottom: "4rem" }}>
+          <div className="animate-fade-in-up" style={{ maxWidth: 720 }}>
+            {/* Eyebrow badge */}
+            <div className="badge badge-red mb-6" style={{ fontSize: "0.78rem" }}>
+              Dhaka Cantonment&apos;s Blood Matching Platform
+            </div>
+
+            <h1 className="mb-5">
+              Every Drop of Blood{" "}
+              <br className="hidden sm:block" />
+              is a{" "}
+              <span className="gradient-text">Lifeline</span>
+            </h1>
+
+            <p
+              style={{
+                fontSize: "clamp(1rem, 2vw, 1.2rem)",
+                maxWidth: 560,
+                lineHeight: 1.75,
+                marginBottom: "2.5rem",
+                color: "var(--text-muted)",
+              }}
+            >
+              Connect with verified blood donors near you in minutes. Whether it&apos;s a
+              scheduled surgery or an emergency, Cantt-Blood bridges the gap between
+              donors and patients instantly within the Cantonment area.
+            </p>
+
+            {/* CTA buttons */}
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3" style={{ marginBottom: "2.5rem" }}>
+              <Link
+                href="/register?role=donor"
+                className="btn-primary"
+                style={{ fontSize: "1rem", padding: "0.875rem 2.25rem" }}
+              >
+                <Heart className="w-5 h-5" aria-hidden="true" />
+                Become a Donor
+              </Link>
+              <Link
+                href="/register?role=receiver"
+                className="btn-secondary"
+                style={{ fontSize: "1rem", padding: "0.875rem 2.25rem" }}
+              >
+                Request Blood
+                <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+            </div>
+
+            {/* Feature checklist */}
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {["Free to use", "Verified donors", "Emergency STAT alerts", "Dhaka Cantonment area"].map((f) => (
+                <span key={f} className="flex items-center gap-1.5 text-sm" style={{ color: "var(--text-muted)" }}>
+                  <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "var(--success)" }} aria-hidden="true" />
+                  {f}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* ── Stats Strip ──────────────────────────────────────────── */}
-      <section className="section-sm" style={{ background: "rgba(17,24,39,0.5)", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <div className="container mx-auto px-6">
+      {/* ── Stats Strip ────────────────────────────────────────── */}
+      <section
+        style={{
+          background: "rgba(13, 20, 36, 0.6)",
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
+          padding: "2.5rem 1.5rem",
+        }}
+      >
+        <div className="container mx-auto">
           <div className="grid-4">
             {STATS.map(({ value, label }) => (
               <div key={label} className="stat-card">
@@ -198,75 +227,66 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── How It Works ─────────────────────────────────────────── */}
+      {/* ── How It Works ───────────────────────────────────────── */}
       <section className="section">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <div className="badge badge-red mb-4">Simple Process</div>
-            <h2>How LifeLink Works</h2>
-            <p className="text-gray-400 mt-4" style={{ maxWidth: 500, margin: "1rem auto 0" }}>
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center" style={{ marginBottom: "3.5rem" }}>
+            <div className="badge badge-red" style={{ marginBottom: "1rem" }}>Simple Process</div>
+            <h2>How Cantt-Blood Works</h2>
+            <p style={{ maxWidth: 480, margin: "1rem auto 0" }}>
               Three simple steps stand between a donor and saving a life.
             </p>
           </div>
 
           <div className="grid-3">
             {STEPS.map(({ icon: Icon, title, desc }, i) => (
-              <div key={title} className="glass" style={{ padding: "2rem", position: "relative" }}>
+              <div key={title} className="glass glass-hover card-glow" style={{ padding: "2rem", position: "relative" }}>
+                {/* Step number watermark */}
                 <div
+                  aria-hidden="true"
                   style={{
                     position: "absolute",
-                    top: "1.5rem",
-                    right: "1.5rem",
-                    fontSize: "3rem",
+                    top: "1.25rem",
+                    right: "1.25rem",
+                    fontSize: "3.5rem",
                     fontWeight: 800,
-                    color: "rgba(220,38,38,0.1)",
+                    color: "rgba(230,57,70,0.08)",
                     lineHeight: 1,
+                    userSelect: "none",
                   }}
                 >
                   {i + 1}
                 </div>
-                <div
-                  className="animate-pulse-blood"
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 12,
-                    background: "rgba(220,38,38,0.15)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: "1.25rem",
-                  }}
-                >
-                  <Icon className="w-6 h-6 text-red-400" />
+                <div className="icon-box icon-box-red">
+                  <Icon className="w-6 h-6" style={{ color: "var(--primary-light)" }} aria-hidden="true" />
                 </div>
-                <h3 className="mb-3">{title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
+                <h3 style={{ marginBottom: "0.75rem" }}>{title}</h3>
+                <p className="text-sm" style={{ lineHeight: 1.7 }}>{desc}</p>
               </div>
             ))}
           </div>
 
-          <div className="text-center mt-10">
+          <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
             <Link href="/how-it-works" className="btn-secondary">
-              Learn More <ChevronRight className="w-4 h-4" />
+              Learn More <ChevronRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── Blood Compatibility Teaser ────────────────────────────── */}
-      <section className="section" style={{ background: "rgba(17,24,39,0.4)" }}>
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <div className="badge badge-red mb-4">Compatibility</div>
+      {/* ── Blood Compatibility Teaser ──────────────────────────── */}
+      <section className="section" style={{ background: "rgba(13, 20, 36, 0.5)" }}>
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center" style={{ marginBottom: "3rem" }}>
+            <div className="badge badge-red" style={{ marginBottom: "1rem" }}>Compatibility</div>
             <h2>Which Blood Groups Are Compatible?</h2>
-            <p className="text-gray-400 mt-4">
+            <p style={{ maxWidth: 500, margin: "1rem auto 0" }}>
               Our matching engine uses the complete ABO + RhD compatibility matrix.
             </p>
           </div>
 
           <div className="glass" style={{ overflowX: "auto", padding: "1.5rem" }}>
-            <table className="table-auto" style={{ minWidth: 600 }}>
+            <table className="table-auto" style={{ minWidth: 560 }}>
               <thead>
                 <tr>
                   <th>Recipient</th>
@@ -274,57 +294,50 @@ export default function HomePage() {
                 </tr>
               </thead>
               <tbody>
-                {(Object.entries(COMPATIBLE_DONORS) as [string, string[]][]).map(
-                  ([recipient, donors]) => (
-                    <tr key={recipient}>
-                      <td>
-                        <span className="badge badge-red">{recipient}</span>
-                      </td>
-                      <td>
-                        <div className="flex flex-wrap gap-2">
-                          {donors.map((d) => (
-                            <span key={d} className="badge badge-gray text-xs">
-                              {d}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                )}
+                {(Object.entries(COMPATIBLE_DONORS) as [string, string[]][]).map(([recipient, donors]) => (
+                  <tr key={recipient}>
+                    <td>
+                      <span className="badge badge-red">{recipient}</span>
+                    </td>
+                    <td>
+                      <div className="flex flex-wrap gap-2">
+                        {donors.map((d) => (
+                          <span key={d} className="badge badge-gray" style={{ fontSize: "0.72rem" }}>
+                            {d}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
 
-          <div className="text-center mt-8">
+          <div style={{ textAlign: "center", marginTop: "2rem" }}>
             <Link href="/blood-types" className="btn-secondary">
-              View Full Chart <ChevronRight className="w-4 h-4" />
+              View Full Chart <ChevronRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── FAQ ──────────────────────────────────────────────────── */}
+      {/* ── FAQ ────────────────────────────────────────────────── */}
       <section className="section">
-        <div className="container-sm mx-auto px-6">
-          <div className="text-center mb-12">
-            <div className="badge badge-red mb-4">FAQ</div>
+        <div className="container-sm mx-auto px-4 md:px-6">
+          <div className="text-center" style={{ marginBottom: "3rem" }}>
+            <div className="badge badge-red" style={{ marginBottom: "1rem" }}>FAQ</div>
             <h2>Frequently Asked Questions</h2>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {FAQS.map(({ q, a }) => (
-              <details
-                key={q}
-                className="glass"
-                style={{ padding: "1.5rem", cursor: "pointer" }}
-              >
+              <details key={q} className="glass" style={{ padding: "1.5rem" }}>
                 <summary
                   style={{
                     fontWeight: 600,
-                    fontSize: "1rem",
-                    color: "white",
-                    listStyle: "none",
+                    fontSize: "0.9375rem",
+                    color: "var(--text)",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -332,32 +345,73 @@ export default function HomePage() {
                   }}
                 >
                   {q}
-                  <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+                  <ChevronRight className="faq-chevron w-4 h-4" style={{ color: "var(--text-muted)" }} aria-hidden="true" />
                 </summary>
-                <p className="text-gray-400 text-sm leading-relaxed mt-4">{a}</p>
+                <div
+                  style={{
+                    color: "var(--text-muted)",
+                    fontSize: "0.9rem",
+                    lineHeight: 1.7,
+                    marginTop: "1rem",
+                    paddingTop: "1rem",
+                    borderTop: "1px solid rgba(255,255,255,0.06)",
+                  }}
+                >
+                  {a === "CONTACT_LINK" ? (
+                    <>
+                      Cantt-Blood is built and maintained by Abu Horaira. You can get in touch{" "}
+                      <a
+                        href="https://portfolio-abu-horaira.vercel.app/contact"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "var(--info)", textDecoration: "underline" }}
+                      >
+                        here
+                      </a>
+                      .
+                    </>
+                  ) : a}
+                </div>
               </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA Banner ───────────────────────────────────────────── */}
-      <section className="section" style={{ background: "linear-gradient(135deg, rgba(220,38,38,0.1), rgba(185,28,28,0.05))", borderTop: "1px solid rgba(220,38,38,0.15)" }}>
-        <div className="container mx-auto px-6 text-center">
-          <Heart
-            className="w-12 h-12 text-red-500 fill-red-500 mx-auto mb-6 animate-pulse-blood"
-          />
-          <h2 className="mb-4">Ready to Save a Life?</h2>
-          <p className="text-gray-400 mb-8" style={{ maxWidth: 480, margin: "0 auto 2rem" }}>
+      {/* ── CTA Banner ─────────────────────────────────────────── */}
+      <section
+        className="section"
+        style={{
+          background: "linear-gradient(135deg, rgba(230,57,70,0.12), rgba(193,18,31,0.06))",
+          borderTop: "1px solid rgba(230,57,70,0.14)",
+        }}
+      >
+        <div className="container mx-auto px-4 md:px-6 text-center">
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: "50%",
+              background: "rgba(230,57,70,0.15)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 1.5rem",
+            }}
+          >
+            <Heart className="w-8 h-8 text-red-500 fill-red-500 animate-pulse-blood" aria-hidden="true" />
+          </div>
+          <h2 style={{ marginBottom: "1rem" }}>Ready to Save a Life?</h2>
+          <p style={{ maxWidth: 460, margin: "0 auto 2.5rem", lineHeight: 1.7 }}>
             It only takes 10 minutes to donate. Your blood could save up to 3 lives.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3">
             <Link href="/register?role=donor" className="btn-primary" style={{ fontSize: "1rem", padding: "0.875rem 2.5rem" }}>
-              <Heart className="w-5 h-5" />
+              <Heart className="w-5 h-5" aria-hidden="true" />
               Register as Donor
             </Link>
             <Link href="/find-donor" className="btn-secondary" style={{ fontSize: "1rem", padding: "0.875rem 2.5rem" }}>
-              <MapPin className="w-4 h-4" />
+              <MapPin className="w-4 h-4" aria-hidden="true" />
               Find Donors Near Me
             </Link>
           </div>

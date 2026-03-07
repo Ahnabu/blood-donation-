@@ -1,88 +1,111 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Users, Droplets, AlertTriangle, ShieldCheck } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const DonorMap = dynamic(() => import("@/components/maps/DonorMap"), { ssr: false });
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState({ donors: 0, requests: 0, inventory: 0, pendingNid: 0 });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Simulating admin overview fetch
-        setTimeout(() => {
-            setStats({
-                donors: 124,
-                requests: 18,
-                inventory: 245,
-                pendingNid: 7,
-            });
-            setLoading(false);
-        }, 500);
+        async function fetchStats() {
+            try {
+                const res = await fetch("/api/admin/stats");
+                const json = await res.json();
+                if (json.success) {
+                    setStats(json.data);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchStats();
     }, []);
 
     return (
         <div>
-            <div className="mb-8 border-b border-white/10 pb-6">
-                <h1 className="text-2xl font-bold mb-2">Mission Control</h1>
-                <p className="text-gray-400">Global overview of platform activity, inventory, and verifications.</p>
+            <div style={{ marginBottom: "2rem", borderBottom: "1px solid var(--border)", paddingBottom: "1.5rem" }}>
+                <h1 style={{ fontSize: "1.625rem", fontWeight: 700, marginBottom: "0.375rem" }}>Mission Control</h1>
+                <p style={{ color: "var(--text-muted)" }}>Global overview of platform activity, inventory, and verifications.</p>
             </div>
 
             {loading ? (
-                <div className="text-center py-20 text-gray-500">Loading metrics...</div>
+                <div style={{ textAlign: "center", padding: "5rem 1rem", color: "var(--text-muted)" }}>Loading metrics…</div>
             ) : (
                 <>
-                    <div className="grid-4 mb-8">
-                        <div className="stat-card p-6 border-blue-500/20">
-                            <div className="flex items-center gap-3 mb-4 text-blue-400">
+                    <div className="grid-4" style={{ marginBottom: "2rem" }}>
+                        <div className="stat-card" style={{ padding: "1.5rem", textAlign: "left", borderColor: "rgba(59,130,246,0.2)" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem", color: "var(--info)" }}>
                                 <Users className="w-5 h-5" /> Total Donors
                             </div>
-                            <div className="text-3xl font-bold text-white mb-1">{stats.donors}</div>
-                            <p className="text-xs text-gray-500">+12 this week</p>
+                            <div style={{ fontSize: "2rem", fontWeight: 800, color: "var(--text)", marginBottom: "0.25rem" }}>{stats.donors}</div>
+                            <p style={{ fontSize: "0.75rem", color: "var(--text-faint)" }}>+12 this week</p>
                         </div>
 
-                        <div className="stat-card p-6 border-yellow-500/20">
-                            <div className="flex items-center gap-3 mb-4 text-yellow-400">
+                        <div className="stat-card" style={{ padding: "1.5rem", textAlign: "left", borderColor: "rgba(245,158,11,0.2)" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem", color: "var(--warning)" }}>
                                 <AlertTriangle className="w-5 h-5" /> Active Requests
                             </div>
-                            <div className="text-3xl font-bold text-white mb-1">{stats.requests}</div>
-                            <p className="text-xs text-gray-500">3 STAT emergencies</p>
+                            <div style={{ fontSize: "2rem", fontWeight: 800, color: "var(--text)", marginBottom: "0.25rem" }}>{stats.requests}</div>
+                            <p style={{ fontSize: "0.75rem", color: "var(--text-faint)" }}>3 STAT emergencies</p>
                         </div>
 
-                        <div className="stat-card p-6 border-red-500/20">
-                            <div className="flex items-center gap-3 mb-4 text-red-500">
+                        <div className="stat-card" style={{ padding: "1.5rem", textAlign: "left", borderColor: "rgba(230,57,70,0.2)" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem", color: "var(--primary)" }}>
                                 <Droplets className="w-5 h-5" /> Blood Units
                             </div>
-                            <div className="text-3xl font-bold text-white mb-1">{stats.inventory}</div>
-                            <p className="text-xs text-gray-500">Safe operating levels</p>
+                            <div style={{ fontSize: "2rem", fontWeight: 800, color: "var(--text)", marginBottom: "0.25rem" }}>{stats.inventory}</div>
+                            <p style={{ fontSize: "0.75rem", color: "var(--text-faint)" }}>Safe operating levels</p>
                         </div>
 
-                        <div className="stat-card p-6 border-purple-500/20">
-                            <div className="flex items-center gap-3 mb-4 text-purple-400">
+                        <div className="stat-card" style={{ padding: "1.5rem", textAlign: "left", borderColor: "rgba(168,85,247,0.2)" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem", color: "#c084fc" }}>
                                 <ShieldCheck className="w-5 h-5" /> Pending NID
                             </div>
-                            <div className="text-3xl font-bold text-white mb-1">{stats.pendingNid}</div>
-                            <p className="text-xs text-gray-500">Requires review</p>
+                            <div style={{ fontSize: "2rem", fontWeight: 800, color: "var(--text)", marginBottom: "0.25rem" }}>{stats.pendingNid}</div>
+                            <p style={{ fontSize: "0.75rem", color: "var(--text-faint)" }}>Requires review</p>
                         </div>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-8">
-                        <div className="glass p-6">
-                            <h2 className="text-lg font-bold mb-4">Urgency Feed (Live)</h2>
-                            <div className="text-center py-12 text-gray-500">
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem" }}>
+                        <div className="glass" style={{ padding: "1.75rem" }}>
+                            <h2 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "1.25rem" }}>Urgency Feed (Live)</h2>
+                            <div style={{ textAlign: "center", padding: "3rem 1rem", color: "var(--text-muted)" }}>
                                 <ActivityIcon />
-                                <p className="mt-2">Connecting to realtime feed...</p>
+                                <p style={{ marginTop: "0.5rem" }}>Connecting to realtime feed…</p>
                             </div>
                         </div>
 
-                        <div className="glass p-6">
-                            <h2 className="text-lg font-bold mb-4">NID Verification Queue</h2>
-                            <div className="text-center py-12 text-gray-500">
-                                <ShieldCheck className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                                <p>7 documents waiting for approval</p>
-                                <button className="text-blue-400 text-sm mt-3 border border-blue-400/30 rounded px-4 py-1 hover:bg-blue-400/10 transition-colors">
+                        <div className="glass" style={{ padding: "1.75rem" }}>
+                            <h2 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "1.25rem" }}>NID Verification Queue</h2>
+                            <div style={{ textAlign: "center", padding: "3rem 1rem", color: "var(--text-muted)" }}>
+                                <ShieldCheck className="w-8 h-8 mx-auto mb-2" style={{ opacity: 0.3 }} />
+                                <p>{stats.pendingNid} documents waiting for approval</p>
+                                <a
+                                    href="/dashboard/admin/nid"
+                                    style={{
+                                        display: "inline-block",
+                                        marginTop: "0.75rem",
+                                        color: "var(--info)",
+                                        fontSize: "0.875rem",
+                                        border: "1px solid rgba(59,130,246,0.3)",
+                                        borderRadius: "var(--radius-sm)",
+                                        padding: "0.375rem 1rem",
+                                    }}
+                                >
                                     Review Queue
-                                </button>
+                                </a>
                             </div>
                         </div>
+                    </div>
+
+                    <div className="glass" style={{ marginTop: "1.5rem", padding: "1.75rem" }}>
+                        <h2 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "1.25rem" }}>Live Donor Map (Dhaka Cantonment)</h2>
+                        <DonorMap />
                     </div>
                 </>
             )}
