@@ -1,5 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
 import dbConnect from "@/lib/db";
@@ -9,6 +10,21 @@ import bcrypt from "bcryptjs";
 export const authOptions: NextAuthOptions = {
     adapter: MongoDBAdapter(clientPromise) as NextAuthOptions["adapter"],
     providers: [
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            profile(profile) {
+                return {
+                    id: profile.sub,
+                    name: profile.name,
+                    email: profile.email,
+                    image: profile.picture,
+                    role: "donor", // Default role for OAuth users
+                    nidStatus: "none",
+                    verified: false,
+                }
+            }
+        }),
         CredentialsProvider({
             name: "credentials",
             credentials: {
