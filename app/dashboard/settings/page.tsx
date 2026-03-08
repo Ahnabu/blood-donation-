@@ -121,6 +121,8 @@ export default function SettingsPage() {
         }
     }, []);
 
+    const role = (session?.user as { role?: string })?.role ?? user?.role;
+
     useEffect(() => { fetchUser(); }, [fetchUser]);
 
     useEffect(() => {
@@ -216,8 +218,6 @@ export default function SettingsPage() {
             setDonorSaving(false);
         }
     }
-
-    const role = (session?.user as { role?: string })?.role ?? user?.role;
 
     return (
         <div>

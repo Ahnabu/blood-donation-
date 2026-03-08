@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <span className={`badge ${badgeClass}`} style={{ textTransform: "capitalize" }}>{role}</span>
                 {nidStatus === "approved"
                     ? <ShieldCheck style={{ width: 16, height: 16, color: "#4ade80", flexShrink: 0 }} />
-                    : <AlertCircle style={{ width: 16, height: 16, color: "#fbbf24", flexShrink: 0 }} title={`NID ${nidStatus}`} />
+                    : <AlertCircle style={{ width: 16, height: 16, color: "#fbbf24", flexShrink: 0 }} aria-label={`NID ${nidStatus}`} />
                 }
             </div>
         </div>
@@ -96,7 +96,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <span className={`badge ${badgeClass}`} style={{ textTransform: "capitalize" }}>{role}</span>
                             {nidStatus === "approved"
                                 ? <ShieldCheck style={{ width: 14, height: 14, color: "#4ade80" }} />
-                                : <AlertCircle style={{ width: 14, height: 14, color: "#fbbf24" }} title={`NID ${nidStatus}`} />
+                                : <AlertCircle style={{ width: 14, height: 14, color: "#fbbf24" }} aria-label={`NID ${nidStatus}`} />
                             }
                         </div>
                         <button className="mobile-menu-btn" onClick={() => setMobileOpen(true)} aria-label="Open navigation" aria-expanded={mobileOpen}>
