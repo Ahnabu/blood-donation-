@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import {
     ShieldAlert, ShieldCheck, Upload, Loader2, Clock,
@@ -13,14 +13,33 @@ const UPLOAD_STEPS = [
     { id: "done",    label: "Submitted!",          Icon: CheckCircle2 },
 ];
 
+function calcAge(dob: string): number {
+    const diff = Date.now() - new Date(dob).getTime();
+    return Math.floor(diff / (365.25 * 24 * 3600 * 1000));
+}
+
 export default function VerifyNidPage() {
     const { data: session, update } = useSession();
 
     // @ts-expect-error custom fields
     const sessionNidStatus = session?.user?.nidStatus as string | undefined;
-    // Flip to "pending" immediately on success without waiting for cookie rotation
+    // @ts-expect-error custom fields
+    const sessionRole      = session?.user?.role      as string | undefined;
+
     const [localPending, setLocalPending] = useState(false);
     const nidStatus = localPending ? "pending" : sessionNidStatus;
+
+    // Fetch DOB to determine document type
+    const [dateOfBirth, setDateOfBirth] = useState<string | null>(null);
+    useEffect(() => {
+        fetch("/api/user/settings")
+            .then(r => r.json())
+            .then(j => { if (j.success && j.data.dateOfBirth) setDateOfBirth(j.data.dateOfBirth); });
+    }, []);
+
+    const isUnder18  = dateOfBirth ? calcAge(dateOfBirth) < 18 : false;
+    const isReceiver = sessionRole === "receiver";
+    const docType    = (isReceiver && isUnder18) ? "Birth Certificate" : "NID";
 
     const [file, setFile] = useState<File | null>(null);
     const [activeStep, setActiveStep] = useState<string | null>(null);
@@ -64,7 +83,7 @@ export default function VerifyNidPage() {
                         <ShieldCheck style={{ width: 36, height: 36, color: "#4ade80" }} />
                     </div>
                     <h2 style={{ fontSize: "1.375rem", fontWeight: 700, marginBottom: "0.75rem" }}>Identity Verified</h2>
-                    <p style={{ color: "var(--text-muted)", fontSize: "0.9375rem", lineHeight: 1.7 }}>Your national ID has been approved. You have full access to the platform.</p>
+                    <p style={{ color: "var(--text-muted)", fontSize: "0.9375rem", lineHeight: 1.7 }}>Your {docType} has been approved. You have full access to the platform.</p>
                 </div>
             </div>
         );
@@ -79,7 +98,7 @@ export default function VerifyNidPage() {
                     </div>
                     <h2 style={{ fontSize: "1.375rem", fontWeight: 700, marginBottom: "0.75rem" }}>Under Review</h2>
                     <p style={{ color: "var(--text-muted)", fontSize: "0.9375rem", lineHeight: 1.7 }}>
-                        Your NID has been submitted and is being reviewed by our team. This usually takes less than 24 hours.
+                        Your {docType} has been submitted and is being reviewed by our team. This usually takes less than 24 hours.
                     </p>
                     {/* Progress checklist */}
                     <div style={{ marginTop: "1.75rem", textAlign: "left", display: "flex", flexDirection: "column", gap: "0.625rem" }}>
@@ -123,7 +142,7 @@ export default function VerifyNidPage() {
                     </div>
                     <div>
                         <h1 style={{ fontSize: "clamp(1.375rem, 2.5vw, 1.75rem)", fontWeight: 700, lineHeight: 1.2 }}>Identity Verification</h1>
-                        <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", marginTop: "0.2rem" }}>Required to unlock full platform access</p>
+                        <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", marginTop: "0.2rem" }}>Submit your {docType} to unlock full platform access</p>
                     </div>
                 </div>
             </div>
@@ -131,7 +150,7 @@ export default function VerifyNidPage() {
             {/* Steps indicator */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", marginBottom: "2rem", overflowX: "auto", paddingBottom: "0.25rem" }}>
                 {[
-                    { n: 1, label: "Upload NID" },
+                    { n: 1, label: `Upload ${docType}` },
                     { n: 2, label: "Admin Review" },
                     { n: 3, label: "Verified" },
                 ].map(({ n, label }, i) => (
@@ -168,7 +187,12 @@ export default function VerifyNidPage() {
                 <form onSubmit={handleUpload}>
                     <div style={{ marginBottom: "1.75rem" }}>
                         <label style={{ display: "block", fontSize: "0.9rem", fontWeight: 600, color: "var(--text)", marginBottom: "0.75rem" }}>
-                            Upload Front Side of NID
+                            Upload Front Side of {docType}
+                            {isReceiver && !dateOfBirth && (
+                                <span style={{ marginLeft: "0.5rem", fontSize: "0.75rem", color: "#fbbf24", fontWeight: 400 }}>
+                                    (Set your date of birth in Settings to confirm correct document type)
+                                </span>
+                            )}
                         </label>
                         <label
                             htmlFor="nid-file"
@@ -276,7 +300,7 @@ export default function VerifyNidPage() {
                 <div style={{ marginTop: "1.75rem", display: "flex", gap: "0.75rem", padding: "1rem 1.125rem", background: "rgba(230,57,70,0.07)", border: "1px solid rgba(230,57,70,0.18)", borderRadius: "var(--radius-sm)" }}>
                     <ShieldAlert style={{ width: 18, height: 18, color: "var(--primary)", flexShrink: 0, marginTop: 2 }} />
                     <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", lineHeight: 1.65 }}>
-                        <strong style={{ color: "var(--text)" }}>Privacy Note:</strong> Your NID image is stored securely and encrypted. It is only used for identity verification by approved admins and will never be shared publicly.
+                        <strong style={{ color: "var(--text)" }}>Privacy Note:</strong> Your {docType} image is stored securely and encrypted. It is only used for identity verification by approved admins and will never be shared publicly.
                     </p>
                 </div>
             </div>

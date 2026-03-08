@@ -10,6 +10,9 @@ export interface IUser extends Document {
     password: string;
     role: UserRole;
     phone?: string;
+    bloodGroup?: string;
+    causeOfNeed?: string;
+    dateOfBirth?: Date;
     nidStatus: NidStatus;
     nidImage?: string;
     verified: boolean;
@@ -36,6 +39,12 @@ const UserSchema = new Schema<IUser>(
             default: "donor",
         },
         phone: { type: String, trim: true },
+        causeOfNeed: { type: String, trim: true },
+        dateOfBirth: { type: Date },
+        bloodGroup: {
+            type: String,
+            enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+        },
         nidStatus: {
             type: String,
             enum: ["none", "pending", "approved", "rejected"],
@@ -49,6 +58,7 @@ const UserSchema = new Schema<IUser>(
 
 UserSchema.index({ role: 1 });
 UserSchema.index({ nidStatus: 1 });
+UserSchema.index({ bloodGroup: 1 });
 
 // Hash password before save
 UserSchema.pre("save", async function (next) {

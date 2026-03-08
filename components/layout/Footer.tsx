@@ -28,7 +28,7 @@ export default function Footer() {
           <div>
             <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", fontWeight: 700, fontSize: "1.125rem", marginBottom: "0.875rem", textDecoration: "none" }}>
               <Heart style={{ width: 22, height: 22, color: "#e63946", fill: "#e63946" }} aria-hidden="true" />
-              <span className="gradient-text">Cantt-Blood</span>
+              <span className="gradient-text">Droplet</span>
             </Link>
             <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: "var(--text-muted)", maxWidth: 260 }}>
               Connecting verified blood donors with patients in Dhaka Cantonment.
@@ -140,7 +140,7 @@ export default function Footer() {
           }}
         >
           <p style={{ fontSize: "0.8rem", color: "var(--text-faint)" }}>
-            © {year} Cantt-Blood. Built to save lives in Dhaka Cantonment.
+            © {year} Droplet. Built to save lives in Dhaka Cantonment.
           </p>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.78rem", color: "var(--text-faint)" }}>

@@ -3,8 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
+import DonorProfile from "@/models/DonorProfile";
 import bcrypt from "bcryptjs";
 import { apiError, apiSuccess } from "@/lib/utils";
+
+const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] as const;
 
 export const dynamic = "force-dynamic";
 
@@ -32,9 +35,11 @@ export async function PATCH(req: NextRequest) {
         return apiError("Invalid JSON", 400);
     }
 
-    const { name, phone, currentPassword, newPassword } = body as {
+    const { name, phone, bloodGroup, dateOfBirth, currentPassword, newPassword } = body as {
         name?: string;
         phone?: string;
+        bloodGroup?: string;
+        dateOfBirth?: string;
         currentPassword?: string;
         newPassword?: string;
     };
@@ -54,6 +59,27 @@ export async function PATCH(req: NextRequest) {
         const trimmed = String(phone).trim();
         if (trimmed && !/^\+?[0-9]{7,15}$/.test(trimmed)) return apiError("Invalid phone number", 400);
         updates.phone = trimmed;
+    }
+
+    if (bloodGroup !== undefined) {
+        const bg = String(bloodGroup).trim();
+        if (bg && !(BLOOD_GROUPS as readonly string[]).includes(bg)) return apiError("Invalid blood group", 400);
+        updates.bloodGroup = bg || null;
+        // Keep DonorProfile in sync
+        if (bg) {
+            await DonorProfile.updateOne({ userId: user._id }, { $set: { bloodGroup: bg } });
+        }
+    }
+
+    if (dateOfBirth !== undefined) {
+        if (dateOfBirth) {
+            const d = new Date(dateOfBirth);
+            if (isNaN(d.getTime())) return apiError("Invalid date of birth", 400);
+            if (d > new Date()) return apiError("Date of birth cannot be in the future", 400);
+            updates.dateOfBirth = d;
+        } else {
+            updates.dateOfBirth = null;
+        }
     }
 
     if (newPassword !== undefined) {

@@ -160,7 +160,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* ── Middle Row ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem", marginBottom: "1.5rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))", gap: "1.5rem", marginBottom: "1.5rem" }}>
 
                 {/* Recent Active Requests */}
                 <div className="glass" style={{ padding: "1.75rem" }}>
@@ -285,7 +285,7 @@ export default function AdminDashboard() {
 
             {/* ── Platform Summary Row ── */}
             {!loading && stats && (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(180px, 100%), 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
                     {[
                         { label: "Total Donors", value: stats.donors, icon: Users, color: "var(--info)" },
                         { label: "New This Month", value: stats.newUsersThisMonth, icon: TrendingUp, color: "#34d399" },

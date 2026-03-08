@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Heart, Users, Droplets, ChevronRight, CheckCircle } from "lucide-react";
+import { Heart, Users, Droplets, ChevronRight, CheckCircle, ShieldCheck } from "lucide-react";
 import { COMPATIBLE_DONORS } from "@/lib/matching";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
 import ReceiverRequest from "@/models/ReceiverRequest";
+import DonorProfile from "@/models/DonorProfile";
 import HeroCTA from "./components/HeroCTA";
 import BottomCTA from "./components/BottomCTA";
 
 export const metadata: Metadata = {
-  title: "Cantt-Blood — Connect Blood Donors, Save Lives",
+  title: "Droplet — Connect Blood Donors, Save Lives",
   description:
     "Dhaka Cantonment's fastest blood donor-receiver matching platform. Find compatible blood donors nearby in seconds. Register as a donor or request blood in emergencies.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Cantt-Blood — Connect Blood Donors, Save Lives",
+    title: "Droplet — Connect Blood Donors, Save Lives",
     description: "Find compatible blood donors in seconds. Register as a donor or request blood.",
     url: "/",
   },
@@ -25,18 +26,23 @@ export const metadata: Metadata = {
 const STEPS = [
   {
     icon: Users,
-    title: "Register & Verify",
-    desc: "Sign up, choose your role (Donor or Receiver), and verify your identity with a national ID.",
+    title: "Register & Choose Role",
+    desc: "Sign up with your email, pick Donor or Receiver, and fill in your blood group, phone number, and date of birth.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Verify Your Identity",
+    desc: "Upload your NID (or Birth Certificate if under 18). Our admin team reviews and approves your account within 24 hours.",
   },
   {
     icon: Droplets,
-    title: "Match Instantly",
-    desc: "Our algorithm matches your blood group to compatible donors within your area using real-time proximity data.",
+    title: "Match & Connect",
+    desc: "Receivers submit blood requests and instantly see verified donors who match their blood type. Donors appear automatically once approved.",
   },
   {
     icon: Heart,
     title: "Save a Life",
-    desc: "Donors are notified immediately. Track request status in real-time until fulfillment.",
+    desc: "Receivers contact matched donors directly. Donors log their donation, growing their reliability score and helping more people over time.",
   },
 ];
 
@@ -57,14 +63,6 @@ const FAQS = [
     q: "What blood groups are accepted?",
     a: "All 8 ABO+Rh blood groups: A+, A−, B+, B−, AB+, AB−, O+, and O−.",
   },
-  {
-    q: "How does the emergency STAT request work?",
-    a: "STAT requests bypass standard queues. Compatible donors within 10 km receive an immediate SMS/email alert. Stock in the blood bank is also checked simultaneously.",
-  },
-  {
-    q: "Having issues or want to talk to the developer?",
-    a: "CONTACT_LINK",
-  },
 ];
 
 const jsonLd = {
@@ -72,7 +70,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Organization",
-      name: "Cantt-Blood",
+      name: "Droplet",
       url: "/",
       description: "Blood donor-receiver matching platform in Dhaka Cantonment",
     },
@@ -90,23 +88,29 @@ const jsonLd = {
 export default async function HomePage() {
   let donorCount = 0;
   let livesSaved = 0;
+  let totalRequests = 0;
+  let availableDonors = 0;
   try {
     await connectDB();
-    const [donors, fulfilled] = await Promise.all([
+    const [donors, fulfilled, requests, available] = await Promise.all([
       User.countDocuments({ role: "donor" }),
       ReceiverRequest.countDocuments({ status: "Fulfilled" }),
+      ReceiverRequest.countDocuments({}),
+      DonorProfile.countDocuments({ isAvailable: true }),
     ]);
     donorCount = donors;
     livesSaved = fulfilled;
+    totalRequests = requests;
+    availableDonors = available;
   } catch {
     // fall back to zeroes if DB is unreachable
   }
 
   const STATS = [
-    { value: donorCount > 0 ? `${donorCount.toLocaleString()}+` : "—", label: "Registered Donors" },
-    { value: livesSaved > 0  ? `${livesSaved.toLocaleString()}+`  : "—", label: "Lives Saved" },
-    { value: "3.2 min", label: "Avg Match Time" },
-    { value: "Dhaka",   label: "Cantonment Area" },
+    { value: `${donorCount.toLocaleString()}+`,    label: "Registered Donors" },
+    { value: `${livesSaved.toLocaleString()}+`,    label: "Lives Saved" },
+    { value: `${totalRequests.toLocaleString()}+`, label: "Total Requests" },
+    { value: `${availableDonors.toLocaleString()}+`, label: "Available Now" },
   ];
   return (
     <>
@@ -226,7 +230,7 @@ export default async function HomePage() {
               }}
             >
               Connect with verified blood donors near you in minutes. Whether it&apos;s a
-              scheduled surgery or an emergency, Cantt-Blood bridges the gap between
+              scheduled surgery or an emergency, Droplet bridges the gap between
               donors and patients instantly within the Cantonment area.
             </p>
 
@@ -247,13 +251,14 @@ export default async function HomePage() {
         </div>
       </section>
 
+
       {/* ── Stats Strip ────────────────────────────────────────── */}
       <section
         style={{
           background: "rgba(13, 20, 36, 0.6)",
           borderTop: "1px solid rgba(255,255,255,0.05)",
           borderBottom: "1px solid rgba(255,255,255,0.05)",
-          padding: "2.5rem 1.5rem",
+          padding: "2.5rem clamp(0.875rem, 4vw, 1.5rem)",
         }}
       >
         <div className="container mx-auto">
@@ -268,18 +273,76 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── Motivating Quotes ──────────────────────────────────── */}
+      <section className="section" style={{ background: "rgba(13, 20, 36, 0.4)", overflow: "hidden" }}>
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center" style={{ marginBottom: "3rem" }}>
+            <div className="badge badge-red" style={{ marginBottom: "1rem" }}>Inspiration</div>
+            <h2>Every Drop Counts</h2>
+            <p style={{ maxWidth: 460, margin: "1rem auto 0", textAlign: "center", color: "var(--text-muted)" }}>
+              One donation can save up to three lives. Be the reason someone goes home today.
+            </p>
+          </div>
+
+          <div className="grid-3">
+            {[
+              {
+                quote: "The blood you donate gives someone else another chance at life — one day that someone may be a close relative, a friend, or even you.",
+                author: "World Health Organization",
+                icon: "🩸",
+              },
+              {
+                quote: "Donating blood is the most precious gift you can give another person — the gift of life. There's no substitute for human blood.",
+                author: "American Red Cross",
+                icon: "❤️",
+              },
+              {
+                quote: "You have two hands — one to help yourself and one to help others. Give blood today and reach out with both.",
+                author: "Unknown",
+                icon: "🤝",
+              },
+              {
+                quote: "It takes only a few minutes of your time to donate blood, but it can mean a lifetime for the person who receives it.",
+                author: "Bangladesh Red Crescent",
+                icon: "⏱️",
+              },
+              {
+                quote: "Be a hero without a cape — roll up your sleeve and donate blood. Your one act of kindness can save three lives.",
+                author: "Droplet",
+                icon: "🦸",
+              },
+              {
+                quote: "Blood cannot be manufactured. It can only come from generous donors like you. Your gift of life cannot be replaced by any other means.",
+                author: "National Blood Service",
+                icon: "💫",
+              },
+            ].map(({ quote, author, icon }) => (
+              <div key={author} className="glass glass-hover" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div style={{ fontSize: "1.75rem", lineHeight: 1 }}>{icon}</div>
+                <p style={{ fontStyle: "italic", color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: 1.75, flex: 1 }}>
+                  &ldquo;{quote}&rdquo;
+                </p>
+                <p style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--primary-light)", letterSpacing: "0.05em" }}>
+                  — {author}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── How It Works ───────────────────────────────────────── */}
       <section className="section">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center" style={{ marginBottom: "3.5rem" }}>
             <div className="badge badge-red" style={{ marginBottom: "1rem" }}>Simple Process</div>
-            <h2>How Cantt-Blood Works</h2>
+            <h2>How Droplet Works</h2>
             <p style={{ maxWidth: 480, margin: "1rem auto 0", textAlign: "center" }}>
-              Three simple steps stand between a donor and saving a life.
+              Four simple steps — from sign-up to saving a life.
             </p>
           </div>
 
-          <div className="grid-3">
+          <div className="grid-4">
             {STEPS.map(({ icon: Icon, title, desc }, i) => (
               <div key={title} className="glass glass-hover card-glow" style={{ padding: "2rem", position: "relative" }}>
                 {/* Step number watermark */}
@@ -326,33 +389,19 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="glass" style={{ overflowX: "auto", padding: "1.5rem" }}>
-            <table className="table-auto" style={{ minWidth: 560 }}>
-              <thead>
-                <tr>
-                  <th>Recipient</th>
-                  <th>Compatible Donor Blood Groups</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(Object.entries(COMPATIBLE_DONORS) as [string, string[]][]).map(([recipient, donors]) => (
-                  <tr key={recipient}>
-                    <td>
-                      <span className="badge badge-red">{recipient}</span>
-                    </td>
-                    <td>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
-                        {donors.map((d) => (
-                          <span key={d} className="badge badge-gray" style={{ fontSize: "0.72rem" }}>
-                            {d}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            {(Object.entries(COMPATIBLE_DONORS) as [string, string[]][]).map(([recipient, donors]) => (
+              <div key={recipient} className="glass" style={{ padding: "0.875rem 1.25rem", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.75rem" }}>
+                <span className="badge badge-red" style={{ flexShrink: 0, minWidth: 44, textAlign: "center" }}>{recipient}</span>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem", flex: 1 }}>
+                  {donors.map((d) => (
+                    <span key={d} className="badge badge-gray" style={{ fontSize: "0.72rem" }}>
+                      {d}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
 
           <div style={{ textAlign: "center", marginTop: "2rem" }}>
@@ -400,7 +449,7 @@ export default async function HomePage() {
                 >
                   {a === "CONTACT_LINK" ? (
                     <>
-                      Cantt-Blood is built and maintained by Abu Horaira. You can get in touch{" "}
+                      Droplet is built and maintained by Abu Horaira. You can get in touch{" "}
                       <a
                         href="https://portfolio-abu-horaira.vercel.app/contact"
                         target="_blank"
@@ -415,6 +464,72 @@ export default async function HomePage() {
                 </div>
               </details>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Team ───────────────────────────────────────────────── */}
+      <section className="section" style={{ background: "rgba(13, 20, 36, 0.5)" }}>
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center" style={{ marginBottom: "3rem" }}>
+            <div className="badge badge-red" style={{ marginBottom: "1rem" }}>The Team</div>
+            <h2>People Behind Droplet</h2>
+            <p style={{ maxWidth: 460, margin: "1rem auto 0", textAlign: "center", color: "var(--text-muted)" }}>
+              Contact us for any information or suggestions.
+            </p>
+          </div>
+
+          <div className="grid-3">
+            {/* Nazmul */}
+            <div className="glass glass-hover" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(230,57,70,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem", fontWeight: 700, color: "var(--primary-light)" }}>N</div>
+              <div>
+                <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "var(--text)", marginBottom: "0.25rem" }}>Nazmul</p>
+                <span className="badge badge-red" style={{ fontSize: "0.7rem" }}>Management</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", marginTop: "0.25rem" }}>
+                <a href="tel:+8801756211322" style={{ color: "var(--text-muted)", fontSize: "0.875rem", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.39 19a19.45 19.45 0 0 1-6-6A19.79 19.79 0 0 1 3.09 4.18 2 2 0 0 1 5.07 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L9.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  01756-211322
+                </a>
+                <p style={{ color: "var(--text-faint)", fontSize: "0.8rem" }}>Manikdi, Dhaka Cantonment, Dhaka 1206</p>
+              </div>
+            </div>
+
+            {/* Abu Horaira */}
+            <div className="glass glass-hover card-glow" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(230,57,70,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem", fontWeight: 700, color: "var(--primary-light)" }}>A</div>
+              <div>
+                <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "var(--text)", marginBottom: "0.25rem" }}>Abu Horaira</p>
+                <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                  <a href="https://portfolio-abu-horaira.vercel.app/" target="_blank" rel="noopener noreferrer" className="badge badge-red" style={{ fontSize: "0.7rem", textDecoration: "none" }}>Developer ↗</a>
+                  <span className="badge badge-red" style={{ fontSize: "0.7rem" }}>Management</span>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", marginTop: "0.25rem" }}>
+                <a href="tel:+8801302537209" style={{ color: "var(--text-muted)", fontSize: "0.875rem", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.39 19a19.45 19.45 0 0 1-6-6A19.79 19.79 0 0 1 3.09 4.18 2 2 0 0 1 5.07 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L9.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  01302537209
+                </a>
+                <p style={{ color: "var(--text-faint)", fontSize: "0.8rem" }}>Manikdi, Dhaka Cantonment, Dhaka 1206</p>
+              </div>
+            </div>
+
+            {/* Sojib */}
+            <div className="glass glass-hover" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(230,57,70,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem", fontWeight: 700, color: "var(--primary-light)" }}>S</div>
+              <div>
+                <p style={{ fontWeight: 700, fontSize: "1.05rem", color: "var(--text)", marginBottom: "0.25rem" }}>Sojib</p>
+                <span className="badge badge-red" style={{ fontSize: "0.7rem" }}>Management</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", marginTop: "0.25rem" }}>
+                <a href="tel:+8801686956992" style={{ color: "var(--text-muted)", fontSize: "0.875rem", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.39 19a19.45 19.45 0 0 1-6-6A19.79 19.79 0 0 1 3.09 4.18 2 2 0 0 1 5.07 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L9.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  01686-956992
+                </a>
+                <p style={{ color: "var(--text-faint)", fontSize: "0.8rem" }}>Manikdi, Dhaka Cantonment, Dhaka 1206</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

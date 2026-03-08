@@ -16,21 +16,24 @@ export async function POST(req: NextRequest) {
 
         await dbConnect();
 
-        const { name, email, password, role, phone } = parsed.data;
+        const { name, email, password, role, phone, bloodGroup, lastDonated, cause, dateOfBirth } = parsed.data;
 
         const existing = await User.findOne({ email });
         if (existing) return apiError("Email already registered", 409);
 
-        const user = await User.create({ name, email, password, role, phone });
+        const user = await User.create({
+            name, email, password, role, phone, bloodGroup,
+            ...(role === "receiver" && cause ? { causeOfNeed: cause } : {}),
+            ...(dateOfBirth ? { dateOfBirth: new Date(dateOfBirth) } : {}),
+        });
 
         // Seed empty donor profile if role is donor
         if (role === "donor") {
             await DonorProfile.create({
                 userId: user._id,
-                bloodGroup: "O+",          // placeholder; donor fills in profile
+                bloodGroup: bloodGroup ?? "O+",
                 location: { type: "Point", coordinates: [0, 0] },
-                age: 18,
-                weight: 50,
+                ...(lastDonated ? { lastDonated: new Date(lastDonated) } : {}),
             });
         }
 

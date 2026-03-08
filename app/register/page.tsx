@@ -3,7 +3,7 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { Heart, Mail, Lock, User, Phone, Loader2 } from "lucide-react";
+import { Heart, Mail, Lock, User, Phone, Loader2, Droplets, Calendar, CalendarDays, FileText } from "lucide-react";
 
 const LABEL_STYLE = {
   display: "block",
@@ -27,7 +27,8 @@ function RegisterForm() {
   const params = useSearchParams();
   const defaultRole = params.get("role") === "receiver" ? "receiver" : "donor";
 
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: defaultRole, phone: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: defaultRole, phone: "", bloodGroup: "", dateOfBirth: "", lastDonated: "", cause: "" });
+  const todayStr = new Date().toISOString().split("T")[0];
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -72,16 +73,16 @@ function RegisterForm() {
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <Link href="/" className="inline-flex items-center gap-2 font-bold text-2xl">
             <Heart className="w-7 h-7 text-red-500 fill-red-500 animate-pulse-blood" aria-hidden="true" />
-            <span className="gradient-text">Cantt-Blood</span>
+            <span className="gradient-text">Droplet</span>
           </Link>
           <p style={{ color: "var(--text-muted)", marginTop: "0.5rem", fontSize: "0.875rem" }}>
             Create your free account
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="glass-strong" style={{ padding: "2.5rem" }}>
+        <form onSubmit={handleSubmit} className="glass-strong" style={{ padding: "clamp(1.25rem, 5vw, 2.5rem)" }}>
           <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1.5rem", color: "var(--text)" }}>
-            Join Cantt-Blood
+            Join Droplet
           </h1>
 
           {/* Role selector */}
@@ -167,7 +168,7 @@ function RegisterForm() {
             <div>
               <label htmlFor="reg-phone" style={LABEL_STYLE}>
                 Phone{" "}
-                <span style={{ color: "var(--text-faint)", fontWeight: 400, fontSize: "0.8rem" }}>(optional)</span>
+                <span style={{ color: "var(--primary)", fontWeight: 600, fontSize: "0.8rem" }}>*</span>
               </label>
               <div style={{ position: "relative" }}>
                 <Phone className="w-4 h-4" aria-hidden="true" style={ICON_STYLE} />
@@ -178,11 +179,108 @@ function RegisterForm() {
                   style={{ paddingLeft: "2.5rem" }}
                   value={form.phone}
                   onChange={(e) => update("phone", e.target.value)}
+                  required
                   placeholder="+880…"
                   autoComplete="tel"
                 />
               </div>
             </div>
+
+            {/* Blood Group */}
+            <div>
+              <label htmlFor="reg-blood" style={LABEL_STYLE}>
+                Blood Group{" "}
+                <span style={{ color: "var(--primary)", fontWeight: 600, fontSize: "0.8rem" }}>*</span>
+              </label>
+              <div style={{ position: "relative" }}>
+                <Droplets className="w-4 h-4" aria-hidden="true" style={ICON_STYLE} />
+                <select
+                  id="reg-blood"
+                  className="input"
+                  style={{ paddingLeft: "2.5rem", cursor: "pointer" }}
+                  value={form.bloodGroup}
+                  onChange={(e) => update("bloodGroup", e.target.value)}
+                  required
+                >
+                  <option value="" disabled>Select blood group</option>
+                  {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bg) => (
+                    <option key={bg} value={bg}>{bg}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Date of Birth */}
+            <div>
+              <label htmlFor="reg-dob" style={LABEL_STYLE}>
+                Date of Birth{" "}
+                <span style={{ color: "var(--text-faint)", fontWeight: 400, fontSize: "0.8rem" }}>(optional)</span>
+              </label>
+              <p style={{ fontSize: "0.78rem", color: "var(--text-faint)", marginBottom: "0.375rem", marginTop: "-0.25rem" }}>
+                Used to determine the correct identity document for verification (NID or Birth Certificate).
+              </p>
+              <div style={{ position: "relative" }}>
+                <CalendarDays className="w-4 h-4" aria-hidden="true" style={ICON_STYLE} />
+                <input
+                  id="reg-dob"
+                  type="date"
+                  className="input"
+                  style={{ paddingLeft: "2.5rem" }}
+                  value={form.dateOfBirth}
+                  onChange={(e) => update("dateOfBirth", e.target.value)}
+                  max={todayStr}
+                />
+              </div>
+            </div>
+
+            {/* Last Donation Date — donors only */}
+            {form.role === "donor" && (
+              <div>
+                <label htmlFor="reg-last-donated" style={LABEL_STYLE}>
+                  Last Donation Date{" "}
+                  <span style={{ color: "var(--text-faint)", fontWeight: 400, fontSize: "0.8rem" }}>(optional — leave blank if never donated)</span>
+                </label>
+                <div style={{ position: "relative" }}>
+                  <Calendar className="w-4 h-4" aria-hidden="true" style={ICON_STYLE} />
+                  <input
+                    id="reg-last-donated"
+                    type="date"
+                    className="input"
+                    style={{ paddingLeft: "2.5rem" }}
+                    value={form.lastDonated}
+                    onChange={(e) => update("lastDonated", e.target.value)}
+                    max={todayStr}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Cause — receivers only */}
+            {form.role === "receiver" && (
+              <div>
+                <label htmlFor="reg-cause" style={LABEL_STYLE}>
+                  Reason for Needing Blood{" "}
+                  <span style={{ color: "var(--primary)", fontWeight: 600, fontSize: "0.8rem" }}>*</span>
+                </label>
+                <div style={{ position: "relative" }}>
+                  <FileText
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                    style={{ ...ICON_STYLE, top: "1.1rem", transform: "none" }}
+                  />
+                  <textarea
+                    id="reg-cause"
+                    className="input"
+                    style={{ paddingLeft: "2.5rem", minHeight: "5rem", resize: "vertical" }}
+                    value={form.cause}
+                    onChange={(e) => update("cause", e.target.value)}
+                    required
+                    rows={3}
+                    placeholder="e.g. Scheduled surgery, accident, chronic condition…"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Password */}
             <div>
@@ -229,7 +327,7 @@ function RegisterForm() {
           {/* Google */}
           <button
             type="button"
-            onClick={() => signIn("google", { callbackUrl: "/dashboard/donor" })}
+            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
             style={{
               display: "flex",
               alignItems: "center",

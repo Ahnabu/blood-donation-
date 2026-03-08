@@ -35,8 +35,8 @@ export interface IDonorProfile extends Document {
   area?: string;
   lastDonated?: Date;
   nextEligibleDate?: Date;
-  age: number;
-  weight: number; // kg
+  age?: number;
+  weight?: number; // kg
   medicalHistory: IMedicalHistory;
   reliabilityScore: number; // 0–100
   totalDonations: number;
@@ -85,8 +85,8 @@ const DonorProfileSchema = new Schema<IDonorProfile>(
     area: { type: String, default: "" },
     lastDonated: { type: Date },
     nextEligibleDate: { type: Date },
-    age: { type: Number, required: true, min: 18, max: 65 },
-    weight: { type: Number, required: true, min: 50 },
+    age: { type: Number, min: 18, max: 65 },
+    weight: { type: Number, min: 45 },
     medicalHistory: { type: MedicalHistorySchema, default: () => ({}) },
     reliabilityScore: { type: Number, default: 50, min: 0, max: 100 },
     totalDonations: { type: Number, default: 0 },

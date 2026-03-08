@@ -30,7 +30,11 @@ export const registerSchema = z.object({
     email: z.string().email(),
     password: z.string().min(8).max(100),
     role: z.enum(["donor", "receiver"]),
-    phone: z.string().optional(),
+    phone: z.string().min(1, "Phone number is required"),
+    dateOfBirth: z.string().optional(),
+    bloodGroup: bloodGroupEnum.optional(),
+    lastDonated: z.string().optional(),
+    cause: z.string().optional(),
 });
 
 export const loginSchema = z.object({

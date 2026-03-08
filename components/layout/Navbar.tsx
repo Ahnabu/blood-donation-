@@ -141,7 +141,7 @@ export default function Navbar() {
                   backgroundClip: "text",
                 }}
               >
-                Cantt-Blood
+                Droplet
               </span>
             </Link>
           </div>

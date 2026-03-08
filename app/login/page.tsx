@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { signIn, getSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Heart, Loader2 } from "lucide-react";
@@ -29,12 +29,7 @@ export default function LoginPage() {
       return;
     }
 
-    const session = await getSession();
-    const role = (session?.user as { role?: string })?.role;
-    if (role === "admin") router.push("/dashboard/admin");
-    else if (role === "receiver") router.push("/dashboard/receiver");
-    else router.push("/dashboard/donor");
-    router.refresh();
+    router.push("/dashboard");
   };
 
   return (
@@ -55,7 +50,7 @@ export default function LoginPage() {
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "1.375rem", textDecoration: "none" }}>
             <Heart className="w-6 h-6 text-red-500 fill-red-500 animate-pulse-blood" aria-hidden="true" />
-            <span className="gradient-text">Cantt-Blood</span>
+            <span className="gradient-text">Droplet</span>
           </Link>
           <p style={{ color: "var(--text-muted)", marginTop: 6, fontSize: "0.875rem" }}>
             Sign in to your account
@@ -187,7 +182,7 @@ export default function LoginPage() {
             {/* Google */}
             <button
               type="button"
-              onClick={() => signIn("google", { callbackUrl: "/dashboard/donor" })}
+              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
               style={{
                 display: "flex",
                 alignItems: "center",

@@ -51,10 +51,14 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  min-width: 0;
 }
 
 /* ─── Base ───────────────────────────────────────────────────── */
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
 
 body {
   background: var(--bg);
@@ -63,6 +67,15 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+main {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────── */
@@ -73,7 +86,7 @@ body {
 
 /* ─── Typography ─────────────────────────────────────────────── */
 h1 {
-  font-size: clamp(2.25rem, 5.5vw, 4.25rem);
+  font-size: clamp(1.875rem, 5.5vw, 4.25rem);
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.03em;
@@ -391,12 +404,17 @@ select.input option { background: var(--surface-2); color: var(--text); }
   .section-sm { padding: 2.25rem 1rem; }
 }
 
+@media (max-width: 480px) {
+  .section    { padding: 3rem 0.875rem; }
+  .section-sm { padding: 2rem 0.875rem; }
+}
+
 /* ─── Container ──────────────────────────────────────────────── */
 .container    { max-width: 1200px; margin: 0 auto; width: 100%; }
 .container-sm { max-width: 780px;  margin: 0 auto; width: 100%; }
 
 /* ─── Grid ───────────────────────────────────────────────────── */
-.grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+.grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 1.5rem; }
 .grid-2    { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
 .grid-3    { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem; }
 .grid-4    { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
@@ -523,14 +541,62 @@ select.input option { background: var(--surface-2); color: var(--text); }
 .dashboard-content {
   flex: 1;
   padding: 2rem 2.5rem;
-  overflow-x: auto;
   min-width: 0;
+  overflow-x: hidden;
+  max-width: 100%;
 }
+
+/* ─── Mobile nav (JS-controlled: only rendered on mobile) ───── */
+.mobile-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 1rem;
+  background: rgba(10, 16, 28, 0.97);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.mobile-nav-drawer {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  max-width: 85vw;
+  height: 100vh;
+  background: rgba(10, 16, 28, 0.99);
+  border-right: 1px solid rgba(255,255,255,0.07);
+  padding: 1.25rem 0.875rem;
+  overflow-y: auto;
+  z-index: 100;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+}
+.mobile-nav-drawer.open { transform: translateX(0); }
+
+.mobile-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 99;
+}
+
+.mobile-menu-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 6px;
+  line-height: 0;
+  transition: color var(--ease), background var(--ease);
+}
+.mobile-menu-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
 
 @media (max-width: 767px) {
   .dashboard-shell { flex-direction: column; }
-  .dashboard-content { padding: 1.5rem clamp(1rem, 4vw, 1.5rem); }
-  .sidebar { display: none; }
+  .dashboard-content { padding: 1.25rem clamp(0.875rem, 4vw, 1.25rem); overflow-x: hidden; }
 }
 
 /* ─── Status Track ───────────────────────────────────────────── */
@@ -621,3 +687,19 @@ details[open] .faq-chevron { transform: rotate(90deg); }
 
 .icon-box-red  { background: rgba(230,57,70,0.15); }
 .icon-box-blue { background: rgba(59,130,246,0.15); }
+
+/* ─── 320-360px micro-viewport adjustments ──────────────────── */
+@media (max-width: 360px) {
+  h1 { font-size: clamp(1.625rem, 9vw, 1.875rem); }
+  h2 { font-size: clamp(1.375rem, 8vw, 1.6rem); }
+
+  .section    { padding: 2.5rem 0.75rem; }
+  .section-sm { padding: 1.75rem 0.75rem; }
+
+  .stat-number { font-size: clamp(1.75rem, 8vw, 2rem); }
+  .stat-card   { padding: 1.25rem 1rem; }
+
+  .btn-hero { font-size: 0.9375rem; padding: 0.875rem 1.25rem; min-height: 48px; }
+
+  .glass { border-radius: var(--radius-sm); }
+}

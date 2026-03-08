@@ -65,6 +65,20 @@ export const authOptions: NextAuthOptions = {
                 token.nidStatus = user.nidStatus;
                 // @ts-expect-error custom fields
                 token.verified = user.verified;
+
+                // OAuth sign-ins: adapter strips custom fields from the user object.
+                // Fetch role/nidStatus/verified directly from the database.
+                if (!token.role) {
+                    await dbConnect();
+                    const dbUser = await User.findById(user.id).select("role nidStatus verified").lean() as {
+                        role?: string; nidStatus?: string; verified?: boolean;
+                    } | null;
+                    if (dbUser) {
+                        token.role = dbUser.role;
+                        token.nidStatus = dbUser.nidStatus;
+                        token.verified = dbUser.verified;
+                    }
+                }
             }
             // Handle session.update() calls — merge any passed fields into token
             if (trigger === "update" && session) {

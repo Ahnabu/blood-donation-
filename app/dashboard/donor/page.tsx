@@ -109,7 +109,7 @@ export default function DonorDashboard() {
             </div>
 
             {/* Donate / Need Blood Action Banner */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
                 <div className="glass" style={{ padding: "1.75rem", border: "1px solid rgba(230,57,70,0.25)", background: "rgba(230,57,70,0.06)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.875rem" }}>
                         <Heart style={{ color: "var(--primary)", width: 22, height: 22 }} />

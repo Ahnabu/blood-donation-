@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { CheckCircle2, Droplets, ChevronDown } from "lucide-react";
+import { CheckCircle2, Droplets, ChevronDown, ChevronUp, Save, Loader2 } from "lucide-react";
 
 type UrgencyLevel = "Routine" | "Urgent" | "STAT";
 type RequestStatus = "Pending" | "Approved" | "InTransit" | "Fulfilled" | "Cancelled";
@@ -14,6 +14,7 @@ interface Request {
     urgency: UrgencyLevel;
     status: RequestStatus;
     reason: string;
+    adminNotes?: string;
     createdAt: string;
 }
 
@@ -48,6 +49,12 @@ export default function AdminRequestsPage() {
     const [page, setPage] = useState(1);
     const pages = Math.ceil(total / 20);
 
+    // Inline action state
+    const [expandedId, setExpandedId]   = useState<string | null>(null);
+    const [editStatus, setEditStatus]   = useState<Record<string, RequestStatus>>({});
+    const [editNotes,  setEditNotes]    = useState<Record<string, string>>({});
+    const [saving,     setSaving]       = useState<string | null>(null);
+
     const fetchRequests = useCallback(async () => {
         setLoading(true);
         try {
@@ -66,6 +73,36 @@ export default function AdminRequestsPage() {
     }, [page, statusFilter, urgencyFilter]);
 
     useEffect(() => { fetchRequests(); }, [fetchRequests]);
+
+    function toggleExpand(req: Request) {
+        if (expandedId === req._id) {
+            setExpandedId(null);
+        } else {
+            setExpandedId(req._id);
+            setEditStatus(s => ({ ...s, [req._id]: req.status }));
+            setEditNotes(n  => ({ ...n,  [req._id]: req.adminNotes ?? "" }));
+        }
+    }
+
+    async function saveAction(id: string) {
+        setSaving(id);
+        try {
+            const res  = await fetch(`/api/requests/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: editStatus[id], adminNotes: editNotes[id] }),
+            });
+            const json = await res.json();
+            if (json.success) {
+                setRequests(rs => rs.map(r => r._id === id ? { ...r, status: editStatus[id], adminNotes: editNotes[id] } : r));
+                setExpandedId(null);
+            } else {
+                alert(json.error ?? "Save failed");
+            }
+        } finally {
+            setSaving(null);
+        }
+    }
 
     const filterStyle: React.CSSProperties = {
         background: "#1a1a2e", border: "1px solid rgba(255,255,255,0.1)",
@@ -102,10 +139,8 @@ export default function AdminRequestsPage() {
                     <div style={{ position: "relative" }}>
                         <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }} style={filterStyle}>
                             <option value="" style={{ background: "#1a1a2e", color: "#e2e8f0" }}>All Status</option>
-                            <option value="Pending" style={{ background: "#1a1a2e", color: "#e2e8f0" }}>Pending</option>
-                            <option value="Approved">Approved</option>
-                            <option value="InTransit">In Transit</option>
-                            <option value="Approved" style={{ background: "#1a1a2e", color: "#e2e8f0" }}>Approved</option>
+                            <option value="Pending"   style={{ background: "#1a1a2e", color: "#e2e8f0" }}>Pending</option>
+                            <option value="Approved"  style={{ background: "#1a1a2e", color: "#e2e8f0" }}>Approved</option>
                             <option value="InTransit" style={{ background: "#1a1a2e", color: "#e2e8f0" }}>In Transit</option>
                             <option value="Fulfilled" style={{ background: "#1a1a2e", color: "#e2e8f0" }}>Fulfilled</option>
                             <option value="Cancelled" style={{ background: "#1a1a2e", color: "#e2e8f0" }}>Cancelled</option>
@@ -133,29 +168,90 @@ export default function AdminRequestsPage() {
             ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                     {requests.map(req => (
-                        <div key={req._id} className="glass" style={{ padding: "1.125rem 1.5rem", display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
-
-                            {/* Blood group badge */}
-                            <div style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(230,57,70,0.12)", border: "1px solid rgba(230,57,70,0.25)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: "0.78rem", fontWeight: 800, color: "var(--primary)" }}>
-                                {req.bloodGroup}
-                            </div>
-
-                            {/* Info */}
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.25rem" }}>
-                                    <span style={{ fontWeight: 700, fontSize: "0.9375rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{req.patientName}</span>
-                                    <Badge label={req.urgency} colors={URGENCY_COLOR[req.urgency]} />
+                        <div key={req._id}>
+                            <div className="glass" style={{ padding: "1.125rem 1.5rem", display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", cursor: "pointer", borderRadius: expandedId === req._id ? "var(--radius) var(--radius) 0 0" : undefined, borderBottom: expandedId === req._id ? "1px solid rgba(255,255,255,0.05)" : undefined }}
+                                onClick={() => toggleExpand(req)}
+                            >
+                                {/* Blood group badge */}
+                                <div style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(230,57,70,0.12)", border: "1px solid rgba(230,57,70,0.25)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: "0.78rem", fontWeight: 800, color: "var(--primary)" }}>
+                                    {req.bloodGroup}
                                 </div>
-                                <p style={{ fontSize: "0.8125rem", color: "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{req.hospitalName} · {req.unitsRequired} unit{req.unitsRequired !== 1 ? "s" : ""}</p>
+
+                                {/* Info */}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.25rem" }}>
+                                        <span style={{ fontWeight: 700, fontSize: "0.9375rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{req.patientName}</span>
+                                        <Badge label={req.urgency} colors={URGENCY_COLOR[req.urgency]} />
+                                    </div>
+                                    <p style={{ fontSize: "0.8125rem", color: "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{req.hospitalName} · {req.unitsRequired} unit{req.unitsRequired !== 1 ? "s" : ""}</p>
+                                </div>
+
+                                {/* Status + date + expand icon */}
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.35rem", flexShrink: 0 }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                        <Badge label={req.status} colors={STATUS_COLOR[req.status]} />
+                                        {expandedId === req._id
+                                            ? <ChevronUp  style={{ width: 14, height: 14, color: "var(--text-faint)" }} />
+                                            : <ChevronDown style={{ width: 14, height: 14, color: "var(--text-faint)" }} />}
+                                    </div>
+                                    <span style={{ fontSize: "0.7375rem", color: "var(--text-faint)" }}>
+                                        {new Date(req.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                                    </span>
+                                </div>
                             </div>
 
-                            {/* Status + date */}
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.35rem", flexShrink: 0 }}>
-                                <Badge label={req.status} colors={STATUS_COLOR[req.status]} />
-                                <span style={{ fontSize: "0.7375rem", color: "var(--text-faint)" }}>
-                                    {new Date(req.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-                                </span>
-                            </div>
+                            {/* Inline action panel */}
+                            {expandedId === req._id && (
+                                <div className="glass" style={{ padding: "1.25rem 1.5rem", borderRadius: "0 0 var(--radius) var(--radius)", display: "flex", flexDirection: "column", gap: "0.875rem", borderTop: "none" }}>
+                                    <p style={{ fontSize: "0.8rem", color: "var(--text-faint)", marginBottom: "-0.25rem" }}>
+                                        <strong style={{ color: "var(--text-muted)" }}>Reason:</strong> {req.reason}
+                                    </p>
+
+                                    <div style={{ display: "flex", gap: "0.875rem", flexWrap: "wrap", alignItems: "flex-end" }}>
+                                        <div style={{ flex: "0 0 auto" }}>
+                                            <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.35rem", fontWeight: 500 }}>Update Status</label>
+                                            <div style={{ position: "relative" }}>
+                                                <select
+                                                    value={editStatus[req._id] ?? req.status}
+                                                    onChange={e => setEditStatus(s => ({ ...s, [req._id]: e.target.value as RequestStatus }))}
+                                                    onClick={e => e.stopPropagation()}
+                                                    style={{ background: "#1a1a2e", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "var(--radius-sm)", padding: "0.5rem 2rem 0.5rem 0.75rem", fontSize: "0.8375rem", color: "#e2e8f0", cursor: "pointer", appearance: "none" as const }}
+                                                >
+                                                    <option value="Pending">Pending</option>
+                                                    <option value="Approved">Approved</option>
+                                                    <option value="InTransit">In Transit</option>
+                                                    <option value="Fulfilled">Fulfilled</option>
+                                                    <option value="Cancelled">Cancelled</option>
+                                                </select>
+                                                <ChevronDown style={{ position: "absolute", right: 7, top: "50%", transform: "translateY(-50%)", width: 12, height: 12, color: "var(--text-faint)", pointerEvents: "none" }} />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ flex: 1, minWidth: 220 }}>
+                                            <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.35rem", fontWeight: 500 }}>Admin Notes (optional)</label>
+                                            <textarea
+                                                value={editNotes[req._id] ?? ""}
+                                                onChange={e => setEditNotes(n => ({ ...n, [req._id]: e.target.value }))}
+                                                onClick={e => e.stopPropagation()}
+                                                rows={2}
+                                                placeholder="Internal notes for this request…"
+                                                style={{ width: "100%", boxSizing: "border-box", background: "rgba(8,12,20,0.75)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "var(--radius-sm)", padding: "0.5rem 0.75rem", fontSize: "0.8375rem", color: "var(--text)", resize: "vertical" }}
+                                            />
+                                        </div>
+
+                                        <button
+                                            onClick={e => { e.stopPropagation(); saveAction(req._id); }}
+                                            disabled={saving === req._id}
+                                            style={{ padding: "0.55rem 1.25rem", borderRadius: "var(--radius-sm)", background: "rgba(74,222,128,0.15)", border: "1px solid rgba(74,222,128,0.3)", color: "#4ade80", fontWeight: 600, fontSize: "0.8375rem", cursor: saving === req._id ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: "0.4rem", flexShrink: 0, opacity: saving === req._id ? 0.6 : 1 }}
+                                        >
+                                            {saving === req._id
+                                                ? <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" />
+                                                : <Save style={{ width: 13, height: 13 }} />}
+                                            {saving === req._id ? "Saving…" : "Save"}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>

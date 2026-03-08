@@ -19,7 +19,7 @@ export async function sendMatchNotification(
 
     try {
         await resend.emails.send({
-            from: `Cantt-Blood Urgent <${EMAIL_FROM}>`,
+            from: `Droplet Urgent <${EMAIL_FROM}>`,
             to: donorEmail,
             subject: `URGENT: ${requestDetails.bloodGroup} Blood Needed at ${requestDetails.hospitalName}`,
             html: `
@@ -40,14 +40,14 @@ export async function sendMatchNotification(
                             </ul>
                         </div>
 
-                        <p style="font-size: 16px;">If you are available to donate, please log into your Cantt-Blood dashboard immediately to accept the request.</p>
+                        <p style="font-size: 16px;">If you are available to donate, please log into your Droplet dashboard immediately to accept the request.</p>
                         
                         <div style="text-align: center; margin-top: 32px;">
                             <a href="${process.env.NEXTAUTH_URL}/dashboard/donor" style="background-color: #ef4444; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">View Request in Dashboard</a>
                         </div>
                     </div>
                     <div style="background-color: #f9fafb; padding: 16px; text-align: center; color: #6b7280; font-size: 14px;">
-                        <p style="margin: 0;">Cantt-Blood Donation Platform</p>
+                        <p style="margin: 0;">Droplet Donation Platform</p>
                         <p style="margin: 4px 0 0 0;">Saving lives in Dhaka Cantonment</p>
                     </div>
                 </div>

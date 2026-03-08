@@ -4,7 +4,7 @@ import { COMPATIBLE_DONORS } from "@/lib/matching";
 export const metadata: Metadata = {
   title: "Blood Type Compatibility Chart — Which Donors Can You Accept?",
   description:
-    "Complete ABO and RhD blood type compatibility chart. Find out which blood groups can donate to which recipients. Used by Cantt-Blood's intelligent matching engine.",
+    "Complete ABO and RhD blood type compatibility chart. Find out which blood groups can donate to which recipients. Used by Droplet's intelligent matching engine.",
   alternates: { canonical: "/blood-types" },
 };
 
@@ -60,56 +60,75 @@ export default function BloodTypesPage() {
             <h2 style={{ textAlign: "center", marginBottom: "2.5rem" }}>
               Donor–Recipient Compatibility Matrix
             </h2>
-            <div className="glass" style={{ overflowX: "auto", padding: "1.5rem" }}>
-              <table className="table-auto" style={{ minWidth: 600 }}>
-                <thead>
-                  <tr>
-                    <th>Recipient Blood Group</th>
-                    <th>✅ Compatible Donors (Red Cells)</th>
-                    <th>❌ Incompatible</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(Object.entries(COMPATIBLE_DONORS) as [string, string[]][]).map(
-                    ([recipient, compatible]) => {
-                      const incompatible = ALL_GROUPS.filter(
-                        (g) => !compatible.includes(g as never)
-                      );
-                      return (
-                        <tr key={recipient}>
-                          <td>
-                            <span className="badge badge-red" style={{ fontSize: "0.9rem" }}>
-                              {recipient}
-                            </span>
-                          </td>
-                          <td>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
-                              {compatible.map((g) => (
-                                <span key={g} className="badge badge-green" style={{ fontSize: "0.7rem" }}>
-                                  {g}
-                                </span>
-                              ))}
-                            </div>
-                          </td>
-                          <td>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
-                              {incompatible.map((g) => (
-                                <span
-                                  key={g}
-                                  className="badge badge-gray"
-                                  style={{ fontSize: "0.7rem", opacity: 0.45 }}
-                                >
-                                  {g}
-                                </span>
-                              ))}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    }
-                  )}
-                </tbody>
-              </table>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+              {/* Header row — hidden on mobile */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "80px 1fr 1fr",
+                  gap: "1rem",
+                  padding: "0.5rem 1.25rem",
+                }}
+                className="hidden sm:grid"
+              >
+                <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-faint)" }}>Recipient</span>
+                <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-faint)" }}>✅ Compatible Donors</span>
+                <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-faint)" }}>❌ Incompatible</span>
+              </div>
+
+              {(Object.entries(COMPATIBLE_DONORS) as [string, string[]][]).map(
+                ([recipient, compatible]) => {
+                  const incompatible = ALL_GROUPS.filter(
+                    (g) => !compatible.includes(g as never)
+                  );
+                  return (
+                    <div
+                      key={recipient}
+                      className="glass"
+                      style={{ padding: "1rem 1.25rem" }}
+                    >
+                      {/* Mobile: stacked layout */}
+                      <div className="sm:hidden" style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+                        <span className="badge badge-red" style={{ fontSize: "0.9rem", alignSelf: "flex-start" }}>{recipient}</span>
+                        <div>
+                          <p style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-faint)", marginBottom: "0.375rem" }}>✅ Can receive from</p>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
+                            {compatible.map((g) => (
+                              <span key={g} className="badge badge-green" style={{ fontSize: "0.7rem" }}>{g}</span>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <p style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-faint)", marginBottom: "0.375rem" }}>❌ Incompatible</p>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
+                            {incompatible.map((g) => (
+                              <span key={g} className="badge badge-gray" style={{ fontSize: "0.7rem", opacity: 0.6 }}>{g}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Desktop: grid row */}
+                      <div
+                        className="hidden sm:grid"
+                        style={{ gridTemplateColumns: "80px 1fr 1fr", gap: "1rem", alignItems: "center" }}
+                      >
+                        <span className="badge badge-red" style={{ fontSize: "0.9rem", alignSelf: "center" }}>{recipient}</span>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
+                          {compatible.map((g) => (
+                            <span key={g} className="badge badge-green" style={{ fontSize: "0.7rem" }}>{g}</span>
+                          ))}
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
+                          {incompatible.map((g) => (
+                            <span key={g} className="badge badge-gray" style={{ fontSize: "0.7rem", opacity: 0.6 }}>{g}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+              )}
             </div>
           </div>
         </section>

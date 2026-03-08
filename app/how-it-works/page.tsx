@@ -3,24 +3,24 @@ import Link from "next/link";
 import { UserPlus, ShieldCheck, Droplets, Bell, HeartHandshake, ChevronRight, Activity } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "How It Works — Cantt-Blood Blood Donation Platform",
+  title: "How It Works — Droplet Blood Donation Platform",
   description:
-    "Learn how Cantt-Blood connects blood donors with patients in Dhaka Cantonment. Simple steps: register & verify, get matched, and save lives. Fully automated with emergency STAT alerts.",
+    "Learn how Droplet connects blood donors with patients in Dhaka Cantonment. Simple steps: register & verify, get matched, and save lives. Fully automated with emergency STAT alerts.",
   alternates: { canonical: "/how-it-works" },
 };
 
 const DONOR_STEPS = [
-  { icon: UserPlus,       title: "Create Your Profile",  desc: "Sign up with email, select 'Donor' role, set your blood group, age, weight, and answer a short medical questionnaire." },
-  { icon: ShieldCheck,    title: "Verify Your Identity", desc: "Upload a clear photo of your national ID (NID). Our admin team reviews and approves within 24 hours." },
-  { icon: Activity,       title: "Get Matched",          desc: "When a patient in your area needs your blood type, you'll receive an instant email notification and see it on your dashboard." },
-  { icon: HeartHandshake, title: "Donate & Save Lives",  desc: "Go to the specified hospital or blood bank, donate, and your Cantt-Blood profile logs the contribution automatically." },
+  { icon: UserPlus,       title: "Register as Donor",     desc: "Sign up with email, select 'Donor' role, then fill in your blood group, phone number, and date of birth." },
+  { icon: ShieldCheck,    title: "Verify Your Identity",  desc: "Upload a clear photo of your NID (or Birth Certificate if you are under 18). Admin reviews and approves within 24 hours." },
+  { icon: Activity,       title: "Complete Your Profile", desc: "Set your area, weight, and answer a short medical questionnaire. Toggle your availability on to start appearing in receiver searches." },
+  { icon: HeartHandshake, title: "Get Matched & Donate",  desc: "Approved receivers with matching blood types will see you on their dashboard and contact you directly. Log each donation to build your reliability score." },
 ];
 
 const RECEIVER_STEPS = [
-  { icon: UserPlus,       title: "Register as Receiver", desc: "Sign up, select 'Receiver' role, and complete NID verification to unlock the blood request form." },
-  { icon: Droplets,       title: "Submit a Request",     desc: "Fill in patient details, blood group, urgency level (Routine / Urgent / STAT), hospital name, and units needed." },
-  { icon: Bell,           title: "Track in Real-Time",   desc: "Watch your request status move through Pending → Approved → In-Transit → Fulfilled in your dashboard." },
-  { icon: HeartHandshake, title: "Receive Blood",        desc: "Once approved, matched donors are contacted and inventory is checked. You receive updates at every step." },
+  { icon: UserPlus,       title: "Register as Receiver",  desc: "Sign up, select 'Receiver' role, and enter your blood group, phone number, date of birth, and cause of need." },
+  { icon: ShieldCheck,    title: "Verify Your Identity",  desc: "Upload your NID (or Birth Certificate if under 18) for admin review. Approval unlocks the full blood request form." },
+  { icon: Droplets,       title: "Submit a Blood Request", desc: "Fill in patient name, required blood group, urgency level (Routine / Urgent / STAT), hospital name, units needed, and optional exact location." },
+  { icon: Bell,           title: "View Matched Donors",   desc: "Once your NID is approved, your dashboard automatically shows available verified donors compatible with your requested blood group. Contact them directly." },
 ];
 
 export default function HowItWorksPage() {
@@ -35,7 +35,7 @@ export default function HowItWorksPage() {
       <section className="section-sm">
         <div className="container mx-auto px-4 md:px-6 text-center">
           <div className="badge badge-red" style={{ marginBottom: "1rem" }}>The Process</div>
-          <h1 style={{ fontSize: "clamp(2rem, 4.5vw, 3.25rem)" }}>How Cantt-Blood Works</h1>
+          <h1 style={{ fontSize: "clamp(2rem, 4.5vw, 3.25rem)" }}>How Droplet Works</h1>
           <p style={{ maxWidth: 520, margin: "1.25rem auto 0", fontSize: "1.05rem", lineHeight: 1.75 }}>
             We&apos;ve simplified blood donation into a few steps — for both donors and patients.
           </p>

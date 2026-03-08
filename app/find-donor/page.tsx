@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import FindDonorClient from "./FindDonorClient";
 
 export const metadata: Metadata = {
-  title: "Find a Blood Donor Near You — Cantt-Blood",
+  title: "Find a Blood Donor Near You — Droplet",
   description:
     "Search for verified blood donors in Dhaka Cantonment. Free, fast, and anonymous. Connect with O+, A+, B+, AB+ donors.",
   alternates: { canonical: "/find-donor" },
